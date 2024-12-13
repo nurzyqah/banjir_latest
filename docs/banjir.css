@@ -1,39 +1,51 @@
-/* CSS File: styles.css */
+:root {
+    --primary-color: #2196F3;
+    --background-color: #f5f5f5;
+    --text-color: #333;
+    --card-bg: #fff;
+    --border-color: #ddd;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
+    padding: 20px;
 }
 
-header {
-    background-color: #007bff;
-    color: white;
+h1 {
     text-align: center;
-    padding: 1rem 0;
+    color: var(--primary-color);
 }
 
-#dashboard {
-    padding: 2rem;
-}
-
-.chart, .table {
-    margin: 2rem 0;
-}
-
-table {
+.table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
+    margin: 20px 0;
 }
 
-th, td {
-    border: 1px solid #ddd;
+.table th, .table td {
+    padding: 12px;
     text-align: left;
-    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-th {
-    background-color: #007bff;
+.table th {
+    background-color: var(--primary-color);
     color: white;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tr:hover {
+    background-color: #f2f2f2;
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-color);
 }
