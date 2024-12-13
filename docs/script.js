@@ -1,16 +1,61 @@
-// Function to fetch data from the API
+// Dummy data for testing if needed
+const dummyData = {
+    ppsbuka: [
+        {
+            id: "10067",
+            pic: "johor.png",
+            nama: "DEWAN KOMUNITI KAMPUNG TASEK",
+            negeri: "Johor",
+            daerah: "Segamat",
+            mangsa: 45,
+            keluarga: 14,
+            kapasiti: "45%",
+        },
+        {
+            id: "5476",
+            pic: "johor.png",
+            nama: "BALAIRAYA GEMEREH IV (BATU BADAK)",
+            negeri: "Johor",
+            daerah: "Segamat",
+            mangsa: 40,
+            keluarga: 12,
+            kapasiti: "57.14%",
+        },
+        {
+            id: "2780",
+            pic: "pahang.png",
+            nama: "BALAIRAYA KAMPUNG BARU PERTANIAN",
+            negeri: "Pahang",
+            daerah: "Maran",
+            mangsa: 11,
+            keluarga: 4,
+            kapasiti: "11%",
+        },
+    ],
+};
+
+// Fetch data from API
 async function fetchData() {
     const url = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
-
+    
     try {
-        const response = await fetch(url);  // Make the API call
+        // Make the API request
+        const response = await fetch(url);
+        
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const data = await response.json();  // Parse the JSON data
-        
-        // Call function to create the table with fetched data
-        createTable(data.ppsbuka);  // Assuming the API returns data in this structure
+
+        const data = await response.json();  // Parse the JSON response
+
+        console.log('Fetched data:', data);  // Log data to inspect its structure
+
+        // Check if ppsbuka exists in the response
+        if (data && data.ppsbuka) {
+            createTable(data.ppsbuka);  // Call function to create the table with fetched data
+        } else {
+            throw new Error('Data not found in response');
+        }
     } catch (error) {
         console.error('Error fetching data:', error);
         const tableContainer = d3.select('#table-container');
@@ -21,7 +66,7 @@ async function fetchData() {
     }
 }
 
-// Create a table and populate it with the data
+// Create a table and populate it
 function createTable(data) {
     const tableContainer = d3.select('#table-container');
     tableContainer.select('.loading').remove(); // Remove the loading message
@@ -30,7 +75,7 @@ function createTable(data) {
         // Fallback for missing or empty data
         tableContainer.append('p')
             .attr('class', 'error')
-            .text('Failed to load data.');
+            .text('No data available.');
         return;
     }
 
@@ -49,7 +94,7 @@ function createTable(data) {
     // Add table body
     const tbody = table.append('tbody');
     tbody.selectAll('tr')
-        .data(data)
+        .data(data) // Assuming the API returns an array of objects
         .enter()
         .append('tr')
         .selectAll('td')
@@ -59,23 +104,10 @@ function createTable(data) {
         .text(d => d);
 }
 
-// Load the data from the API and populate the table
+// Wait for the DOM to load, then fetch data
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        // Show a loading message until the data is fetched
-        const tableContainer = d3.select('#table-container');
-        tableContainer.append('p')
-            .attr('class', 'loading')
-            .text('Loading data...');
-        
-        // Fetch the data from the API
-        fetchData();
-    } catch (error) {
-        console.error('Error loading data:', error);
-        const tableContainer = d3.select('#table-container');
-        tableContainer.select('.loading').remove();
-        tableContainer.append('p')
-            .attr('class', 'error')
-            .text('Failed to load data.');
-    }
+    const tableContainer = d3.select('#table-container');
+    tableContainer.append('p').attr('class', 'loading').text('Loading data...');  // Show loading message
+    
+    fetchData();  // Fetch data from the API
 });
