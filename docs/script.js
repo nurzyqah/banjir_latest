@@ -1,40 +1,27 @@
-// Dummy data
-const dummyData = {
-    ppsbuka: [
-        {
-            id: "10067",
-            pic: "johor.png",
-            nama: "DEWAN KOMUNITI KAMPUNG TASEK",
-            negeri: "Johor",
-            daerah: "Segamat",
-            mangsa: 45,
-            keluarga: 14,
-            kapasiti: "45%",
-        },
-        {
-            id: "5476",
-            pic: "johor.png",
-            nama: "BALAIRAYA GEMEREH IV (BATU BADAK)",
-            negeri: "Johor",
-            daerah: "Segamat",
-            mangsa: 40,
-            keluarga: 12,
-            kapasiti: "57.14%",
-        },
-        {
-            id: "2780",
-            pic: "pahang.png",
-            nama: "BALAIRAYA KAMPUNG BARU PERTANIAN",
-            negeri: "Pahang",
-            daerah: "Maran",
-            mangsa: 11,
-            keluarga: 4,
-            kapasiti: "11%",
-        },
-    ],
-};
+// Function to fetch data from the API
+async function fetchData() {
+    const url = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
 
-// Create a table and populate it
+    try {
+        const response = await fetch(url);  // Make the API call
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();  // Parse the JSON data
+        
+        // Call function to create the table with fetched data
+        createTable(data.ppsbuka);  // Assuming the API returns data in this structure
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        const tableContainer = d3.select('#table-container');
+        tableContainer.select('.loading').remove();
+        tableContainer.append('p')
+            .attr('class', 'error')
+            .text('Failed to load data.');
+    }
+}
+
+// Create a table and populate it with the data
 function createTable(data) {
     const tableContainer = d3.select('#table-container');
     tableContainer.select('.loading').remove(); // Remove the loading message
@@ -72,12 +59,17 @@ function createTable(data) {
         .text(d => d);
 }
 
-// Load dummy data
+// Load the data from the API and populate the table
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        setTimeout(() => {
-            createTable(dummyData.ppsbuka);
-        }, 1000); // Simulate a short delay
+        // Show a loading message until the data is fetched
+        const tableContainer = d3.select('#table-container');
+        tableContainer.append('p')
+            .attr('class', 'loading')
+            .text('Loading data...');
+        
+        // Fetch the data from the API
+        fetchData();
     } catch (error) {
         console.error('Error loading data:', error);
         const tableContainer = d3.select('#table-container');
