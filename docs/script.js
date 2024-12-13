@@ -1,47 +1,73 @@
-// API URL
-const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
+// Dummy data
+const dummyData = {
+    ppsbuka: [
+        {
+            id: "10067",
+            pic: "johor.png",
+            nama: "DEWAN KOMUNITI KAMPUNG TASEK",
+            negeri: "Johor",
+            daerah: "Segamat",
+            mangsa: 45,
+            keluarga: 14,
+            kapasiti: "45%",
+        },
+        {
+            id: "5476",
+            pic: "johor.png",
+            nama: "BALAIRAYA GEMEREH IV (BATU BADAK)",
+            negeri: "Johor",
+            daerah: "Segamat",
+            mangsa: 40,
+            keluarga: 12,
+            kapasiti: "57.14%",
+        },
+        {
+            id: "2780",
+            pic: "pahang.png",
+            nama: "BALAIRAYA KAMPUNG BARU PERTANIAN",
+            negeri: "Pahang",
+            daerah: "Maran",
+            mangsa: 11,
+            keluarga: 4,
+            kapasiti: "11%",
+        },
+    ],
+};
 
-// Select table container
-const tableContainer = d3.select('#table-container');
+// Create a table and populate it
+function createTable(data) {
+    const tableContainer = d3.select('#table-container');
+    tableContainer.select('.loading').remove(); // Remove the loading message
 
-// Add a loading message
-tableContainer.append('div').attr('class', 'loading').text('Loading data...');
-
-// Fetch data from API
-d3.json(apiUrl).then(data => {
-    // Remove loading message
-    tableContainer.select('.loading').remove();
-
-    // Create table
-    const table = tableContainer.append('table').attr('class', 'table');
+    // Create the table
+    const table = tableContainer.append('table');
 
     // Add table header
     const thead = table.append('thead');
     thead.append('tr')
         .selectAll('th')
-        .data(['PPS Name', 'District', 'State', 'Victims', 'Families', 'Status'])
+        .data(['PPS Name', 'State', 'District', 'Victims', 'Families', 'Capacity'])
         .enter()
         .append('th')
         .text(d => d);
 
     // Add table body
     const tbody = table.append('tbody');
-    data.forEach(item => {
-        tbody.append('tr')
-            .selectAll('td')
-            .data([
-                item.pps_name || 'N/A',
-                item.district_name || 'N/A',
-                item.state_name || 'N/A',
-                item.total_mangsa || 'N/A',
-                item.total_keluarga || 'N/A',
-                item.status_name || 'N/A'
-            ])
-            .enter()
-            .append('td')
-            .text(d => d);
-    });
-}).catch(error => {
-    console.error('Error fetching data:', error);
-    tableContainer.select('.loading').text('Failed to load data.');
+    tbody.selectAll('tr')
+        .data(data)
+        .enter()
+        .append('tr')
+        .selectAll('td')
+        .data(d => [d.nama, d.negeri, d.daerah, d.mangsa, d.keluarga, d.kapasiti])
+        .enter()
+        .append('td')
+        .text(d => d);
+}
+
+// Load dummy data
+document.addEventListener('DOMContentLoaded', () => {
+    // Simulate fetching data
+    setTimeout(() => {
+        createTable(dummyData.ppsbuka);
+    }, 1000); // Simulate a short delay
 });
