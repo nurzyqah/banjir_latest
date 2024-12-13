@@ -39,6 +39,14 @@ function createTable(data) {
     const tableContainer = d3.select('#table-container');
     tableContainer.select('.loading').remove(); // Remove the loading message
 
+    if (!data || data.length === 0) {
+        // Fallback for missing or empty data
+        tableContainer.append('p')
+            .attr('class', 'error')
+            .text('Failed to load data.');
+        return;
+    }
+
     // Create the table
     const table = tableContainer.append('table');
 
@@ -66,8 +74,16 @@ function createTable(data) {
 
 // Load dummy data
 document.addEventListener('DOMContentLoaded', () => {
-    // Simulate fetching data
-    setTimeout(() => {
-        createTable(dummyData.ppsbuka);
-    }, 1000); // Simulate a short delay
+    try {
+        setTimeout(() => {
+            createTable(dummyData.ppsbuka);
+        }, 1000); // Simulate a short delay
+    } catch (error) {
+        console.error('Error loading data:', error);
+        const tableContainer = d3.select('#table-container');
+        tableContainer.select('.loading').remove();
+        tableContainer.append('p')
+            .attr('class', 'error')
+            .text('Failed to load data.');
+    }
 });
