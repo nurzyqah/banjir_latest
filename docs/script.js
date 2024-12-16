@@ -4,11 +4,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
 
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => response.text())  // Use .text() instead of .json() to get the raw response
         .then(data => {
-            console.log('Raw proxy data:', data);
-            const parsedData = JSON.parse(data.contents); // Parse JSON yang ada dalam 'contents'
-            displayData(parsedData);
+            console.log('Raw proxy data:', data);  // Log the raw data to check what we are getting
+            try {
+                const jsonData = JSON.parse(data);  // Attempt to parse the response data as JSON
+                if (jsonData && jsonData.contents) {
+                    const parsedData = JSON.parse(jsonData.contents);  // Parse the contents as JSON
+                    displayData(parsedData);  // Pass the parsed data to displayData
+                } else {
+                    throw new Error('Invalid JSON structure.');
+                }
+            } catch (error) {
+                console.error('Error parsing the data:', error.message);
+                tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error.message);
