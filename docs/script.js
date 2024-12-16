@@ -5,7 +5,6 @@ const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURICompon
 
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
     const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia coordinates
@@ -89,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const width = 400, height = 400, radius = Math.min(width, height) / 2;
 
-        const svg = d3.select("#pie-chart")
+        const svg = d3.select("#pie-chart")  // Ensure this matches the ID in HTML
             .attr("width", width)
             .attr("height", height)
             .append("g")
@@ -117,5 +116,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .style('font-size', '12px');
     }
 });
-
-
