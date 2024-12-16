@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error('Error parsing the data:', error.message);
-                tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
+                tableContainer.innerHTML = <p style="color: red;">Failed to parse data: ${error.message}</p>;
             }
         })
         .catch(error => {
             console.error('Error fetching data:', error.message);
-            tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
+            tableContainer.innerHTML = <p style="color: red;">Failed to load data: ${error.message}</p>;
         });
 
     // Function to display flood data in a table
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        let tableHTML = `
+        let tableHTML = 
             <table>
                 <thead>
                     <tr>
@@ -68,10 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </tr>
                 </thead>
                 <tbody>
-        `;
+        ;
 
         data.ppsbuka.forEach(item => {
-            tableHTML += `
+            tableHTML += 
                 <tr>
                     <td>${item.nama}</td>
                     <td>${item.negeri}</td>
@@ -80,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${item.keluarga}</td>
                     <td>${item.kapasiti}</td>
                 </tr>
-            `;
+            ;
         });
 
-        tableHTML += `</tbody></table>`;
+        tableHTML += </tbody></table>;
         tableContainer.innerHTML = tableHTML;
     }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to render pie chart
     function renderPieChart(data, chartId, label) {
         if (!data || !data.data || data.data.length === 0) {
-            document.getElementById(chartId).parentElement.innerHTML = `<p>No data available for ${label}</p>`;
+            document.getElementById(chartId).parentElement.innerHTML = <p>No data available for ${label}</p>;
             return;
         }
 
