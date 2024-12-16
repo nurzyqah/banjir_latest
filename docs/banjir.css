@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 20px auto;
     padding: 20px;
     background-color: #ffffff;
@@ -17,7 +17,11 @@ body {
 h1 {
     text-align: center;
     color: #007bff;
-    font-size: 24px;
+}
+
+#map {
+    height: 400px;
+    margin-bottom: 20px;
 }
 
 #table-container {
@@ -29,7 +33,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    font-size: 14px;
 }
 
 th, td {
@@ -47,9 +50,4 @@ th {
     text-align: center;
     font-size: 16px;
     color: #666;
-}
-
-#map {
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
