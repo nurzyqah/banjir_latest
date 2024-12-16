@@ -99,13 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const pie = d3.pie().value(d => d.value);
         const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
-        svg.selectAll('path')
+        const arcs = svg.selectAll('path')
             .data(pie(pieData))
             .join('path')
             .attr('d', arc)
             .attr('fill', d => color(d.data.label))
             .attr('stroke', 'white')
-            .style('stroke-width', '2px');
+            .style('stroke-width', '2px')
+            .style('opacity', 0.7);
+
+        arcs.transition()
+            .duration(1000)
+            .attrTween('d', function(d) {
+                const i = d3.interpolate(this._current, d);
+                this._current = i(0);
+                return function(t) { return arc(i(t)); };
+            });
 
         svg.selectAll('text')
             .data(pie(pieData))
@@ -113,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .text(d => `${d.data.label} (${d.data.value})`)
             .attr('transform', d => `translate(${arc.centroid(d)})`)
             .style('text-anchor', 'middle')
-            .style('font-size', '12px');
+            .style('font-size', '12px')
+            .style('fill', 'white');
     }
 });
