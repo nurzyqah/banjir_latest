@@ -1,4 +1,3 @@
-/* Global body styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -6,7 +5,6 @@ body {
     padding: 0;
 }
 
-/* Container for the dashboard content */
 .container {
     max-width: 900px;
     margin: 20px auto;
@@ -16,32 +14,27 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Header styling */
 h1 {
     text-align: center;
     color: #007bff;
 }
 
-/* Map styling */
 #map {
     height: 400px;
     margin-bottom: 20px;
 }
 
-/* Table container styling */
 #table-container {
     margin-top: 20px;
     overflow-x: auto;
 }
 
-/* Table styling */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
 }
 
-/* Table header and cell styling */
 th, td {
     padding: 10px;
     text-align: left;
@@ -53,7 +46,6 @@ th {
     color: white;
 }
 
-/* Loading text style */
 .loading {
     text-align: center;
     font-size: 16px;
