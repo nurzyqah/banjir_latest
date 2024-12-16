@@ -3,47 +3,28 @@ const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
 
-    // Fetch data from the API
     fetch(apiUrl)
-        .then(response => {
-            // Check if the response is successful
-            if (!response.ok) {
-                throw new Error('Failed to fetch data. Response not OK.');
-            }
-            return response.text(); // Get raw response text (we'll parse it manually)
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Raw response:', data); // Log the raw response data
-
-            // Try to parse the data as JSON
-            try {
-                const parsedData = JSON.parse(data); // Parse the JSON data inside 'contents'
-                displayData(parsedData);
-            } catch (error) {
-                // If parsing fails, show an error message
-                tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
-                console.error('Error parsing data:', error.message);
-            }
+            console.log('Raw proxy data:', data);
+            const parsedData = JSON.parse(data.contents); // Parse JSON yang ada dalam 'contents'
+            displayData(parsedData);
         })
         .catch(error => {
-            // Log errors during fetching
             console.error('Error fetching data:', error.message);
-            tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
+            tableContainer.innerHTML = <p style="color: red;">Failed to load data: ${error.message}</p>;
         });
 });
 
-// Function to display the data in the table
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
     console.log('Displaying data:', data);
 
-    // Check if there is any data available
     if (!data.ppsbuka || data.ppsbuka.length === 0) {
         tableContainer.innerHTML = '<p>No data available.</p>';
         return;
     }
 
-    // Build the table HTML
     let tableHTML = `
         <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -59,7 +40,6 @@ function displayData(data) {
             <tbody>
     `;
 
-    // Loop through the data and add each row to the table
     data.ppsbuka.forEach(item => {
         tableHTML += `
             <tr>
@@ -73,6 +53,6 @@ function displayData(data) {
         `;
     });
 
-    tableHTML += `</tbody></table>`;
-    tableContainer.innerHTML = tableHTML; // Set the table HTML in the container
+    tableHTML += </tbody></table>;
+    tableContainer.innerHTML = tableHTML;
 }
