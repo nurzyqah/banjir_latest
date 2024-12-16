@@ -1,7 +1,7 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 
-const geoJsonUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
-const geoJsonUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
+const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
+const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Load GeoJSON for both Semenanjung and Borneo
+    // Load GeoJSON for both Semenanjung and Borneo via proxy
     Promise.all([fetch(geoJsonUrlSemenanjung), fetch(geoJsonUrlBorneo)])
         .then(responses => Promise.all(responses.map(response => response.json())))
         .then(data => {
@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (jsonData && jsonData.contents) {
                     const parsedData = JSON.parse(jsonData.contents);
                     displayData(parsedData);  // Pass the parsed data to displayData
-                    updatePieChart(parsedData);  // Pass data to update the pie chart
                 } else {
                     throw new Error('Invalid JSON structure: missing contents');
                 }
@@ -84,57 +83,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tableHTML += `</tbody></table>`;
         tableContainer.innerHTML = tableHTML;
-    }
-
-    // Function to update the pie chart
-    function updatePieChart(data) {
-        const floodStats = {
-            "Sufficient Capacity": 0,
-            "Overflowing": 0,
-            "Insufficient Capacity": 0
-        };
-
-        if (data.ppsbuka && data.ppsbuka.length > 0) {
-            data.ppsbuka.forEach(item => {
-                if (item.kapasiti) {
-                    if (item.kapasiti === "Sufficient") {
-                        floodStats["Sufficient Capacity"]++;
-                    } else if (item.kapasiti === "Overflowing") {
-                        floodStats["Overflowing"]++;
-                    } else {
-                        floodStats["Insufficient Capacity"]++;
-                    }
-                }
-            });
-        }
-
-        const ctx = document.getElementById('pie-chart').getContext('2d');
-        const pieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: Object.keys(floodStats),
-                datasets: [{
-                    data: Object.values(floodStats),
-                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
-                    borderColor: ['#fff', '#fff', '#fff'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
     }
 });
