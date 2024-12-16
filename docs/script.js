@@ -1,11 +1,9 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 
-const geoJsonUrlSemenanjung = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
-const geoJsonUrlBorneo = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
-
-
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
-
+const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
+const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -18,14 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and load GeoJSON data
     Promise.all([
-        fetch(geoJsonUrlSemenanjung).then(response => response.json()),
-        fetch(geoJsonUrlBorneo).then(response => response.json())
+        fetchGeoJson(geoJsonUrlSemenanjung),
+        fetchGeoJson(geoJsonUrlBorneo)
     ])
     .then(([semenanjungData, borneoData]) => {
-        L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
-        L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
+        L.geoJSON(semenanjungData).addTo(map);
+        L.geoJSON(borneoData).addTo(map);
     })
-    .catch(error => console.error('Error loading GeoJSON data:', error));
+    .catch(error => {
+        console.error('Error loading GeoJSON data:', error);
+        tableContainer.innerHTML = '<p style="color: red;">Failed to load map data.</p>';
+    });
 
     // Fetch and display flood data
     fetch(apiUrl)
@@ -41,8 +42,19 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            tableContainer.innerHTML = '<p style="color: red;">Failed to load data.</p>';
+            tableContainer.innerHTML = '<p style="color: red;">Failed to load flood data.</p>';
         });
+
+    // Function to fetch GeoJSON data and parse it
+    function fetchGeoJson(url) {
+        return fetch(url)
+            .then(response => response.json())  // Parse the response as JSON
+            .then(data => data)  // Return the parsed GeoJSON data
+            .catch(error => {
+                console.error('Error fetching GeoJSON:', error);
+                return {};  // Return empty object in case of error
+            });
+    }
 
     // Function to display data in a table
     function displayTable(data) {
@@ -78,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tableContainer.innerHTML = tableHTML;
     }
 
-    // Function to create a pie chart
+    // Function to create a pie chart using D3.js
     function createPieChart(data) {
         const totalVictims = d3.sum(data, d => +d.mangsa);
         const totalFamilies = d3.sum(data, d => +d.keluarga);
@@ -118,3 +130,4 @@ document.addEventListener('DOMContentLoaded', () => {
             .style('font-size', '12px');
     }
 });
+
