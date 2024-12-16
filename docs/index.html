@@ -7,28 +7,34 @@
     <link rel="stylesheet" href="banjir.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <!-- Chart.js for pie chart -->
+    <!-- Chart.js CSS (optional for styling the charts) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Malaysia Flood Dashboard</h1>
-        <div id="map"></div>
+        
+        <!-- Map Container -->
+        <div id="map" style="width: 100%; height: 500px;"></div>
+
+        <!-- Table for displaying data -->
         <div id="table-container">
             <p class="loading">Loading data...</p>
         </div>
 
-        <!-- Pie Charts for Victims, Families, PPS -->
-        <div id="pie-charts-container">
+        <!-- Pie charts for Mangsa, Keluarga, and PPS -->
+        <h2>Flood Data Pie Charts</h2>
+        <div>
             <canvas id="mangsaChart" width="400" height="400"></canvas>
             <canvas id="keluargaChart" width="400" height="400"></canvas>
             <canvas id="ppsChart" width="400" height="400"></canvas>
         </div>
     </div>
 
-    <!-- Pautan ke D3.js dan script.js -->
+    <!-- External Libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Your Custom JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>

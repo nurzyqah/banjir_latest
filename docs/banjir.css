@@ -1,59 +1,42 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
     margin: 0;
     padding: 0;
-}
-
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f4;
+    text-align: center;
 }
 
 h1 {
-    text-align: center;
+    margin-top: 20px;
+    font-size: 2em;
+    color: #333;
+}
+
+#loading {
+    font-size: 1.5em;
     color: #007bff;
 }
 
-#map {
-    height: 400px;
-    margin-bottom: 20px;
-}
-
-#table-container {
-    margin-top: 20px;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-th {
-    background-color: #007bff;
-    color: white;
-}
-
-.loading {
-    text-align: center;
-    font-size: 16px;
-    color: #666;
-}
-
-#pie-charts-container {
+.chart-container {
     display: flex;
     justify-content: space-around;
-    margin-top: 30px;
+    margin-top: 40px;
+}
+
+.chart {
+    width: 45%;
+    display: inline-block;
+    text-align: center;
+}
+
+canvas {
+    width: 100% !important;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+h3 {
+    margin-top: 10px;
+    color: #333;
 }
