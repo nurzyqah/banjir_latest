@@ -52,12 +52,7 @@ th {
     color: #666;
 }
 
-#chart-container {
-    margin-top: 20px;
-    text-align: center;
-}
-
 #pie-chart {
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
 }
