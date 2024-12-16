@@ -18,18 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
+    console.log('Displaying data:', data);
+
     if (!data.ppsbuka || data.ppsbuka.length === 0) {
-        tableContainer.innerHTML = '<p class="text-center text-danger">No data available.</p>';
+        tableContainer.innerHTML = '<p>No data available.</p>';
         return;
     }
 
     let tableHTML = `
-        <table class="table table-bordered table-hover">
+        <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>State</th>
                     <th>PPS Name</th>
+                    <th>State</th>
                     <th>District</th>
                     <th>Victims</th>
                     <th>Families</th>
@@ -39,25 +40,15 @@ function displayData(data) {
             <tbody>
     `;
 
-    data.ppsbuka.forEach((item, index) => {
+    data.ppsbuka.forEach(item => {
         tableHTML += `
             <tr>
-                <td>${index + 1}</td>
-                <td>
-                    <img src="https://infobencanajkmv2.jkm.gov.my/images/${item.pic}" alt="${item.negeri}" width="50" height="30">
-                    ${item.negeri}
-                </td>
                 <td>${item.nama}</td>
+                <td>${item.negeri}</td>
                 <td>${item.daerah}</td>
                 <td>${item.mangsa}</td>
                 <td>${item.keluarga}</td>
-                <td>
-                    <div class="progress" style="height: 20px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: ${item.kapasiti};">
-                            ${item.kapasiti}
-                        </div>
-                    </div>
-                </td>
+                <td>${item.kapasiti}</td>
             </tr>
         `;
     });
