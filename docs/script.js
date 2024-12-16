@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (jsonData && jsonData.contents) {
                     const parsedData = JSON.parse(jsonData.contents);
                     displayData(parsedData);  // Pass the parsed data to displayData
+                    updatePieChart(parsedData);  // Pass data to update the pie chart
                 } else {
                     throw new Error('Invalid JSON structure: missing contents');
                 }
@@ -83,5 +84,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tableHTML += `</tbody></table>`;
         tableContainer.innerHTML = tableHTML;
+    }
+
+    // Function to update the pie chart
+    function updatePieChart(data) {
+        const floodStats = {
+            "Sufficient Capacity": 0,
+            "Overflowing": 0,
+            "Insufficient Capacity": 0
+        };
+
+        if (data.ppsbuka && data.ppsbuka.length > 0) {
+            data.ppsbuka.forEach(item => {
+                if (item.kapasiti) {
+                    if (item.kapasiti === "Sufficient") {
+                        floodStats["Sufficient Capacity"]++;
+                    } else if (item.kapasiti === "Overflowing") {
+                        floodStats["Overflowing"]++;
+                    } else {
+                        floodStats["Insufficient Capacity"]++;
+                    }
+                }
+            });
+        }
+
+        const ctx = document.getElementById('pie-chart').getContext('2d');
+        const pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(floodStats),
+                datasets: [{
+                    data: Object.values(floodStats),
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                    borderColor: ['#fff', '#fff', '#fff'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 });
