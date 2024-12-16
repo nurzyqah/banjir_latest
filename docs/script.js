@@ -1,10 +1,7 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-
 const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
 const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
-
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -21,8 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(geoJsonUrlBorneo).then(response => response.json())
     ])
     .then(([semenanjungData, borneoData]) => {
-        L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
-        L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
+        if (semenanjungData.contents && borneoData.contents) {
+            L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
+            L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
+        } else {
+            console.error('Error: Invalid GeoJSON data received.');
+        }
     })
     .catch(error => console.error('Error loading GeoJSON data:', error));
 
