@@ -6,7 +6,7 @@ const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
-    const map = L.map('map').setView([4.2105, 101.9758], 6);  // Malaysia's central coordinates
+    const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia's central coordinates
 
     // Tile layer for the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -25,13 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch flood data and populate the table
     fetch(apiUrl)
-        .then(response => response.text())  // Get raw response as text
+        .then(response => response.text()) // Get raw response as text
         .then(data => {
             try {
                 const jsonData = JSON.parse(data);
                 if (jsonData && jsonData.contents) {
                     const parsedData = JSON.parse(jsonData.contents);
-                    displayData(parsedData);  // Pass the parsed data to displayData
+                    displayData(parsedData); // Pass the parsed data to displayData
                 } else {
                     throw new Error('Invalid JSON structure: missing contents');
                 }
