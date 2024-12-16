@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Fetch and load GeoJSON data
+    // Fetch and load GeoJSON data with retry mechanism
     Promise.all([
-        fetchGeoJson(geoJsonUrlSemenanjung),
-        fetchGeoJson(geoJsonUrlBorneo)
+        fetchGeoJsonWithRetry(geoJsonUrlSemenanjung),
+        fetchGeoJsonWithRetry(geoJsonUrlBorneo)
     ])
     .then(([semenanjungData, borneoData]) => {
         // Check if data is successfully loaded
@@ -48,37 +48,43 @@ document.addEventListener('DOMContentLoaded', () => {
             tableContainer.innerHTML = '<p style="color: red;">Failed to load flood data.</p>';
         });
 
-    // Function to fetch GeoJSON data and parse it
-    function fetchGeoJson(url) {
-        return fetch(url)
-            .then(response => {
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();  // Parse the response as JSON
-            })
-            .then(data => {
-                // Log the response to inspect the data
-                console.log('Raw GeoJSON Response:', data);
-                if (data && data.contents) {
-                    try {
-                        const geoJson = JSON.parse(data.contents);
-                        console.log('Parsed GeoJSON:', geoJson); // Log parsed GeoJSON
-                        return geoJson;  // Return the parsed GeoJSON data
-                    } catch (error) {
-                        console.error('Error parsing GeoJSON:', error);
-                        return null;  // Return null in case of parse error
-                    }
-                } else {
-                    console.error('GeoJSON data is missing "contents" field');
-                    return null;  // Return null if data is invalid
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching GeoJSON:', error);
-                return null;  // Return null in case of error
-            });
+    // Function to fetch GeoJSON data with retry mechanism
+    function fetchGeoJsonWithRetry(url, retries = 3, delay = 1000) {
+        return new Promise((resolve, reject) => {
+            const attemptFetch = (retriesLeft) => {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.contents) {
+                            try {
+                                const geoJson = JSON.parse(data.contents);
+                                console.log('Parsed GeoJSON:', geoJson);
+                                resolve(geoJson); // Return the parsed GeoJSON data
+                            } catch (error) {
+                                console.error('Error parsing GeoJSON:', error);
+                                reject('GeoJSON parsing error');
+                            }
+                        } else {
+                            reject('GeoJSON data is missing "contents" field');
+                        }
+                    })
+                    .catch(error => {
+                        if (retriesLeft > 0) {
+                            console.warn(`Fetch failed, retrying... (${retriesLeft} attempts left)`);
+                            setTimeout(() => attemptFetch(retriesLeft - 1), delay);
+                        } else {
+                            reject(error); // Final failure
+                        }
+                    });
+            };
+
+            attemptFetch(retries); // Start the fetch attempt
+        });
     }
 
     // Function to display data in a table
