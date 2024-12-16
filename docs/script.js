@@ -25,7 +25,7 @@ function displayData(data) {
         return;
     }
 
-    let tableHTML = `
+    let tableHTML = 
         <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
@@ -38,10 +38,10 @@ function displayData(data) {
                 </tr>
             </thead>
             <tbody>
-    `;
+    ;
 
     data.ppsbuka.forEach(item => {
-        tableHTML += `
+        tableHTML += 
             <tr>
                 <td>${item.nama}</td>
                 <td>${item.negeri}</td>
@@ -50,7 +50,7 @@ function displayData(data) {
                 <td>${item.keluarga}</td>
                 <td>${item.kapasiti}</td>
             </tr>
-        `;
+        ;
     });
 
     tableHTML += </tbody></table>;
