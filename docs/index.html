@@ -4,43 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malaysia Flood Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Leaflet CSS for map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="banjir.css">
 </head>
 <body>
     <div class="container">
         <h1>Malaysia Flood Dashboard</h1>
-        
-        <div class="stats-container">
-            <div class="stat-card">
-                <h3>Total Victims</h3>
-                <p id="total-victims">Loading...</p>
-            </div>
-            <div class="stat-card">
-                <h3>Total Families</h3>
-                <p id="total-families">Loading...</p>
-            </div>
-            <div class="stat-card">
-                <h3>Total Capacity</h3>
-                <p id="total-capacity">Loading...</p>
-            </div>
-        </div>
-
         <div id="table-container">
             <p class="loading">Loading data...</p>
         </div>
-
-        <div id="map-container">
-            <h2>Flood Affected Areas Map</h2>
-            <div id="map"></div>
-        </div>
-
-        <canvas id="victimsChart" width="400" height="200"></canvas>
     </div>
 
+    <!-- Pautan ke D3.js dan script.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
 </body>
