@@ -1,113 +1,69 @@
-// Dummy data for testing if needed
-const dummyData = {
-    ppsbuka: [
-        {
-            id: "10067",
-            pic: "johor.png",
-            nama: "DEWAN KOMUNITI KAMPUNG TASEK",
-            negeri: "Johor",
-            daerah: "Segamat",
-            mangsa: 45,
-            keluarga: 14,
-            kapasiti: "45%",
-        },
-        {
-            id: "5476",
-            pic: "johor.png",
-            nama: "BALAIRAYA GEMEREH IV (BATU BADAK)",
-            negeri: "Johor",
-            daerah: "Segamat",
-            mangsa: 40,
-            keluarga: 12,
-            kapasiti: "57.14%",
-        },
-        {
-            id: "2780",
-            pic: "pahang.png",
-            nama: "BALAIRAYA KAMPUNG BARU PERTANIAN",
-            negeri: "Pahang",
-            daerah: "Maran",
-            mangsa: 11,
-            keluarga: 4,
-            kapasiti: "11%",
-        },
-    ],
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const tableContainer = document.getElementById('table-container');
 
-// Fetch data from API
-async function fetchData() {
-    const url = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
-    
-    try {
-        // Make the API request
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
+    // URL API
+    const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
 
-        const data = await response.json();  // Parse the JSON response
+    // Fetch data dari API
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayData(data); // Fungsi untuk paparkan data
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            tableContainer.innerHTML = '<p style="color: red;">Failed to load data. Please try again later.</p>';
+        });
+});
 
-        console.log('Fetched data:', data);  // Log data to inspect its structure
+// Fungsi untuk paparkan data dalam HTML
+function displayData(data) {
+    const tableContainer = document.getElementById('table-container');
+    const ppsData = data.ppsbuka || []; // Ambil data ppsbuka
 
-        // Check if ppsbuka exists in the response
-        if (data && data.ppsbuka) {
-            createTable(data.ppsbuka);  // Call function to create the table with fetched data
-        } else {
-            throw new Error('Data not found in response');
-        }
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        const tableContainer = d3.select('#table-container');
-        tableContainer.select('.loading').remove();
-        tableContainer.append('p')
-            .attr('class', 'error')
-            .text('Failed to load data.');
-    }
-}
-
-// Create a table and populate it
-function createTable(data) {
-    const tableContainer = d3.select('#table-container');
-    tableContainer.select('.loading').remove(); // Remove the loading message
-
-    if (!data || data.length === 0) {
-        // Fallback for missing or empty data
-        tableContainer.append('p')
-            .attr('class', 'error')
-            .text('No data available.');
+    // Jika tiada data
+    if (ppsData.length === 0) {
+        tableContainer.innerHTML = '<p>No data available.</p>';
         return;
     }
 
-    // Create the table
-    const table = tableContainer.append('table');
+    // Bina jadual HTML
+    let tableHTML = `
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>PPS Name</th>
+                    <th>State</th>
+                    <th>District</th>
+                    <th>Victims</th>
+                    <th>Families</th>
+                    <th>Capacity</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-    // Add table header
-    const thead = table.append('thead');
-    thead.append('tr')
-        .selectAll('th')
-        .data(['PPS Name', 'State', 'District', 'Victims', 'Families', 'Capacity'])
-        .enter()
-        .append('th')
-        .text(d => d);
+    // Loop melalui data
+    ppsData.forEach(item => {
+        tableHTML += `
+            <tr>
+                <td>${item.nama}</td>
+                <td>${item.negeri}</td>
+                <td>${item.daerah}</td>
+                <td>${item.mangsa}</td>
+                <td>${item.keluarga}</td>
+                <td>${item.kapasiti}</td>
+            </tr>
+        `;
+    });
 
-    // Add table body
-    const tbody = table.append('tbody');
-    tbody.selectAll('tr')
-        .data(data) // Assuming the API returns an array of objects
-        .enter()
-        .append('tr')
-        .selectAll('td')
-        .data(d => [d.nama, d.negeri, d.daerah, d.mangsa, d.keluarga, d.kapasiti])
-        .enter()
-        .append('td')
-        .text(d => d);
+    tableHTML += `</tbody></table>`;
+
+    // Paparkan jadual dalam HTML
+    tableContainer.innerHTML = tableHTML;
 }
-
-// Wait for the DOM to load, then fetch data
-document.addEventListener('DOMContentLoaded', () => {
-    const tableContainer = d3.select('#table-container');
-    tableContainer.append('p').attr('class', 'loading').text('Loading data...');  // Show loading message
-    
-    fetchData();  // Fetch data from the API
-});
