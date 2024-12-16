@@ -1,22 +1,14 @@
+const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
 
-    const apiUrl = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
-
-
-    console.log('Fetching data from API:', apiUrl);
-
     fetch(apiUrl)
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Data fetched successfully:', data);
-            displayData(data);
+            console.log('Raw proxy data:', data);
+            const parsedData = JSON.parse(data.contents); // Parse JSON yang ada dalam 'contents'
+            displayData(parsedData);
         })
         .catch(error => {
             console.error('Error fetching data:', error.message);
