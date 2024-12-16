@@ -1,6 +1,8 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+
 const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
 const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
+
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,18 +16,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and load GeoJSON data
     Promise.all([
-        fetch(geoJsonUrlSemenanjung).then(response => response.json()),
+        fetch(geoJsonUrlSemenanjung).then(response => response.json())
+            .catch(error => {
+                console.error('Error loading Semenanjung GeoJSON:', error);
+                return null; // Return null in case of error
+            }),
         fetch(geoJsonUrlBorneo).then(response => response.json())
+            .catch(error => {
+                console.error('Error loading Borneo GeoJSON:', error);
+                return null; // Return null in case of error
+            })
     ])
     .then(([semenanjungData, borneoData]) => {
-        if (semenanjungData.contents && borneoData.contents) {
-            L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
-            L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
+        if (semenanjungData) {
+            L.geoJSON(semenanjungData).addTo(map);
         } else {
-            console.error('Error: Invalid GeoJSON data received.');
+            console.error('Semenanjung GeoJSON data is missing.');
         }
-    })
-    .catch(error => console.error('Error loading GeoJSON data:', error));
+        
+        if (borneoData) {
+            L.geoJSON(borneoData).addTo(map);
+        } else {
+            console.error('Borneo GeoJSON data is missing.');
+        }
+    });
 
     // Fetch and display flood data
     fetch(apiUrl)
