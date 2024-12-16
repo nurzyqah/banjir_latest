@@ -1,7 +1,4 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-
-const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
-const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
 const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 
@@ -20,8 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchGeoJson(geoJsonUrlBorneo)
     ])
     .then(([semenanjungData, borneoData]) => {
-        L.geoJSON(semenanjungData).addTo(map);
-        L.geoJSON(borneoData).addTo(map);
+        // Check if data is successfully loaded
+        if (semenanjungData && borneoData) {
+            L.geoJSON(semenanjungData).addTo(map);
+            L.geoJSON(borneoData).addTo(map);
+        } else {
+            console.error('GeoJSON data is empty or invalid');
+            tableContainer.innerHTML = '<p style="color: red;">Failed to load map data.</p>';
+        }
     })
     .catch(error => {
         console.error('Error loading GeoJSON data:', error);
@@ -48,8 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to fetch GeoJSON data and parse it
     function fetchGeoJson(url) {
         return fetch(url)
-            .then(response => response.json())  // Parse the response as JSON
-            .then(data => data)  // Return the parsed GeoJSON data
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();  // Parse the response as JSON
+            })
+            .then(data => {
+                if (!data || !data.contents) {
+                    throw new Error('GeoJSON data is empty');
+                }
+                console.log('GeoJSON Data:', data);  // Log the GeoJSON data for inspection
+                return JSON.parse(data.contents);  // Return the parsed GeoJSON data
+            })
             .catch(error => {
                 console.error('Error fetching GeoJSON:', error);
                 return {};  // Return empty object in case of error
@@ -130,4 +144,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .style('font-size', '12px');
     }
 });
-
