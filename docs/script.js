@@ -1,6 +1,6 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
-const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
+const geoJsonUrlSemenanjung = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
+const geoJsonUrlBorneo = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -13,11 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and load GeoJSON data with retry mechanism
     Promise.all([
-        fetchGeoJsonWithRetry(geoJsonUrlSemenanjung),
-        fetchGeoJsonWithRetry(geoJsonUrlBorneo)
+        fetchGeoJsonWithFallback(geoJsonUrlSemenanjung),
+        fetchGeoJsonWithFallback(geoJsonUrlBorneo)
     ])
     .then(([semenanjungData, borneoData]) => {
-        // Check if data is successfully loaded
         if (semenanjungData && borneoData) {
             L.geoJSON(semenanjungData).addTo(map);
             L.geoJSON(borneoData).addTo(map);
@@ -32,59 +31,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Fetch and display flood data
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const parsedData = JSON.parse(data.contents);
-            if (parsedData && parsedData.ppsbuka) {
-                displayTable(parsedData.ppsbuka);
-                createPieChart(parsedData.ppsbuka);
-            } else {
-                tableContainer.innerHTML = '<p>No data available.</p>';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            tableContainer.innerHTML = '<p style="color: red;">Failed to load flood data.</p>';
-        });
+    fetchFloodData();
 
-    // Function to fetch GeoJSON data with retry mechanism
-    function fetchGeoJsonWithRetry(url, retries = 3, delay = 1000) {
-        return new Promise((resolve, reject) => {
-            const attemptFetch = (retriesLeft) => {
-                fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Network response was not ok: ${response.statusText}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data && data.contents) {
-                            try {
-                                const geoJson = JSON.parse(data.contents);
-                                console.log('Parsed GeoJSON:', geoJson);
-                                resolve(geoJson); // Return the parsed GeoJSON data
-                            } catch (error) {
-                                console.error('Error parsing GeoJSON:', error);
-                                reject('GeoJSON parsing error');
-                            }
-                        } else {
-                            reject('GeoJSON data is missing "contents" field');
-                        }
-                    })
-                    .catch(error => {
-                        if (retriesLeft > 0) {
-                            console.warn(`Fetch failed, retrying... (${retriesLeft} attempts left)`);
-                            setTimeout(() => attemptFetch(retriesLeft - 1), delay);
-                        } else {
-                            reject(error); // Final failure
-                        }
-                    });
-            };
+    // Function to fetch flood data
+    function fetchFloodData() {
+        const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 
-            attemptFetch(retries); // Start the fetch attempt
-        });
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const parsedData = JSON.parse(data.contents);
+                if (parsedData && parsedData.ppsbuka) {
+                    displayTable(parsedData.ppsbuka);
+                    createPieChart(parsedData.ppsbuka);
+                } else {
+                    tableContainer.innerHTML = '<p>No data available.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching flood data:', error);
+                tableContainer.innerHTML = '<p style="color: red;">Failed to load flood data.</p>';
+            });
+    }
+
+    // Function to fetch GeoJSON data with a fallback approach
+    function fetchGeoJsonWithFallback(url) {
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.contents) {
+                    return JSON.parse(data.contents); // Return parsed GeoJSON
+                } else {
+                    throw new Error('GeoJSON data is empty or invalid');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching GeoJSON:', error);
+                return null; // Return null if GeoJSON fetch fails
+            });
     }
 
     // Function to display data in a table
@@ -161,3 +150,4 @@ document.addEventListener('DOMContentLoaded', () => {
             .style('font-size', '12px');
     }
 });
+
