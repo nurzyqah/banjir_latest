@@ -1,8 +1,10 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-
 const geoJsonUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
 const geoJsonUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
+const pieDataMangsaUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-pie.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=&j=mangsa';
+const pieDataKeluargaUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-pie.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=&j=keluarga';
+const pieDataPpsUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-pie.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=&j=pps';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -83,5 +85,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tableHTML += `</tbody></table>`;
         tableContainer.innerHTML = tableHTML;
+    }
+
+    // Fetch pie chart data for Victims, Families, and PPS
+    Promise.all([fetch(pieDataMangsaUrl), fetch(pieDataKeluargaUrl), fetch(pieDataPpsUrl)])
+        .then(responses => Promise.all(responses.map(response => response.json())))
+        .then(data => {
+            const [mangsaData, keluargaData, ppsData] = data;
+            renderPieChart(mangsaData, 'mangsaChart', 'Victims');
+            renderPieChart(keluargaData, 'keluargaChart', 'Families');
+            renderPieChart(ppsData, 'ppsChart', 'PPS');
+        })
+        .catch(error => console.error('Error fetching pie chart data:', error));
+
+    // Function to render pie chart
+    function renderPieChart(data, chartId, label) {
+        if (!data || !data.data || data.data.length === 0) {
+            document.getElementById(chartId).parentElement.innerHTML = `<p>No data available for ${label}</p>`;
+            return;
+        }
+
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const chartData = {
+            labels: data.data.map(item => item.label),
+            datasets: [{
+                data: data.data.map(item => item.value),
+                backgroundColor: ['#FF9999', '#66B3FF', '#99FF99', '#FFCC99'], // Customize as needed
+                borderColor: ['#FF6666', '#3399FF', '#66FF66', '#FF9966'],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            });
+        };
     }
 });
