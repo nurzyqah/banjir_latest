@@ -1,38 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
 
-    // URL API
     const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=';
 
-    // Fetch data dari API
+    console.log('Fetching data from API:', apiUrl);
+
     fetch(apiUrl)
         .then(response => {
+            console.log('Response status:', response.status);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            displayData(data); // Fungsi untuk paparkan data
+            console.log('Data fetched successfully:', data);
+            displayData(data);
         })
         .catch(error => {
-            console.error('Error fetching data:', error);
-            tableContainer.innerHTML = '<p style="color: red;">Failed to load data. Please try again later.</p>';
+            console.error('Error fetching data:', error.message);
+            tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
         });
 });
 
-// Fungsi untuk paparkan data dalam HTML
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
-    const ppsData = data.ppsbuka || []; // Ambil data ppsbuka
+    console.log('Displaying data:', data);
 
-    // Jika tiada data
-    if (ppsData.length === 0) {
+    if (!data.ppsbuka || data.ppsbuka.length === 0) {
         tableContainer.innerHTML = '<p>No data available.</p>';
         return;
     }
 
-    // Bina jadual HTML
     let tableHTML = `
         <table border="1" style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -48,8 +47,7 @@ function displayData(data) {
             <tbody>
     `;
 
-    // Loop melalui data
-    ppsData.forEach(item => {
+    data.ppsbuka.forEach(item => {
         tableHTML += `
             <tr>
                 <td>${item.nama}</td>
@@ -63,7 +61,5 @@ function displayData(data) {
     });
 
     tableHTML += `</tbody></table>`;
-
-    // Paparkan jadual dalam HTML
     tableContainer.innerHTML = tableHTML;
 }
