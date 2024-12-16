@@ -52,21 +52,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchGeoJson(url) {
         return fetch(url)
             .then(response => {
+                // Check if response is OK
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
                 return response.json();  // Parse the response as JSON
             })
             .then(data => {
-                if (!data || !data.contents) {
-                    throw new Error('GeoJSON data is empty');
+                // Log the response to inspect the data
+                console.log('Raw GeoJSON Response:', data);
+                if (data && data.contents) {
+                    try {
+                        const geoJson = JSON.parse(data.contents);
+                        console.log('Parsed GeoJSON:', geoJson); // Log parsed GeoJSON
+                        return geoJson;  // Return the parsed GeoJSON data
+                    } catch (error) {
+                        console.error('Error parsing GeoJSON:', error);
+                        return null;  // Return null in case of parse error
+                    }
+                } else {
+                    console.error('GeoJSON data is missing "contents" field');
+                    return null;  // Return null if data is invalid
                 }
-                console.log('GeoJSON Data:', data);  // Log the GeoJSON data for inspection
-                return JSON.parse(data.contents);  // Return the parsed GeoJSON data
             })
             .catch(error => {
                 console.error('Error fetching GeoJSON:', error);
-                return {};  // Return empty object in case of error
+                return null;  // Return null in case of error
             });
     }
 
