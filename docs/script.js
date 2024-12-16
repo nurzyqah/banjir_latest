@@ -1,6 +1,10 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-const geoJsonUrlSemenanjung = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
-const geoJsonUrlBorneo = 'https://cors-anywhere.herokuapp.com/https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
+
+const geoJsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
+const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
+
+const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -11,70 +15,33 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Fetch and load GeoJSON data with retry mechanism
+    // Fetch and load GeoJSON data
     Promise.all([
-        fetchGeoJsonWithFallback(geoJsonUrlSemenanjung),
-        fetchGeoJsonWithFallback(geoJsonUrlBorneo)
+        fetch(geoJsonUrlSemenanjung).then(response => response.json()),
+        fetch(geoJsonUrlBorneo).then(response => response.json())
     ])
     .then(([semenanjungData, borneoData]) => {
-        if (semenanjungData && borneoData) {
-            L.geoJSON(semenanjungData).addTo(map);
-            L.geoJSON(borneoData).addTo(map);
-        } else {
-            console.error('GeoJSON data is empty or invalid');
-            tableContainer.innerHTML = '<p style="color: red;">Failed to load map data.</p>';
-        }
+        L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
+        L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
     })
-    .catch(error => {
-        console.error('Error loading GeoJSON data:', error);
-        tableContainer.innerHTML = '<p style="color: red;">Failed to load map data.</p>';
-    });
+    .catch(error => console.error('Error loading GeoJSON data:', error));
 
     // Fetch and display flood data
-    fetchFloodData();
-
-    // Function to fetch flood data
-    function fetchFloodData() {
-        const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
-
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                const parsedData = JSON.parse(data.contents);
-                if (parsedData && parsedData.ppsbuka) {
-                    displayTable(parsedData.ppsbuka);
-                    createPieChart(parsedData.ppsbuka);
-                } else {
-                    tableContainer.innerHTML = '<p>No data available.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching flood data:', error);
-                tableContainer.innerHTML = '<p style="color: red;">Failed to load flood data.</p>';
-            });
-    }
-
-    // Function to fetch GeoJSON data with a fallback approach
-    function fetchGeoJsonWithFallback(url) {
-        return fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.contents) {
-                    return JSON.parse(data.contents); // Return parsed GeoJSON
-                } else {
-                    throw new Error('GeoJSON data is empty or invalid');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching GeoJSON:', error);
-                return null; // Return null if GeoJSON fetch fails
-            });
-    }
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const parsedData = JSON.parse(data.contents);
+            if (parsedData && parsedData.ppsbuka) {
+                displayTable(parsedData.ppsbuka);
+                createPieChart(parsedData.ppsbuka);
+            } else {
+                tableContainer.innerHTML = '<p>No data available.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            tableContainer.innerHTML = '<p style="color: red;">Failed to load data.</p>';
+        });
 
     // Function to display data in a table
     function displayTable(data) {
@@ -110,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tableContainer.innerHTML = tableHTML;
     }
 
-    // Function to create a pie chart using D3.js
+    // Function to create a pie chart
     function createPieChart(data) {
         const totalVictims = d3.sum(data, d => +d.mangsa);
         const totalFamilies = d3.sum(data, d => +d.keluarga);
@@ -150,4 +117,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .style('font-size', '12px');
     }
 });
-
