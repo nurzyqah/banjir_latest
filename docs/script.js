@@ -5,6 +5,7 @@ const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURICompon
 
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
     const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia coordinates
@@ -16,30 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and load GeoJSON data
     Promise.all([
-        fetch(geoJsonUrlSemenanjung).then(response => response.json())
-            .catch(error => {
-                console.error('Error loading Semenanjung GeoJSON:', error);
-                return null; // Return null in case of error
-            }),
+        fetch(geoJsonUrlSemenanjung).then(response => response.json()),
         fetch(geoJsonUrlBorneo).then(response => response.json())
-            .catch(error => {
-                console.error('Error loading Borneo GeoJSON:', error);
-                return null; // Return null in case of error
-            })
     ])
     .then(([semenanjungData, borneoData]) => {
-        if (semenanjungData) {
-            L.geoJSON(semenanjungData).addTo(map);
-        } else {
-            console.error('Semenanjung GeoJSON data is missing.');
-        }
-        
-        if (borneoData) {
-            L.geoJSON(borneoData).addTo(map);
-        } else {
-            console.error('Borneo GeoJSON data is missing.');
-        }
-    });
+        L.geoJSON(JSON.parse(semenanjungData.contents)).addTo(map);
+        L.geoJSON(JSON.parse(borneoData.contents)).addTo(map);
+    })
+    .catch(error => console.error('Error loading GeoJSON data:', error));
 
     // Fetch and display flood data
     fetch(apiUrl)
