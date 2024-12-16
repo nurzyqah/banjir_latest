@@ -5,6 +5,7 @@ const geoJsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURICompon
 
 const floodDataUrl = 'https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0';
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
     const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia coordinates
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const width = 400, height = 400, radius = Math.min(width, height) / 2;
 
-        const svg = d3.select("#pie-chart")  // Ensure this matches the ID in HTML
+        const svg = d3.select("#pie-chart")
             .attr("width", width)
             .attr("height", height)
             .append("g")
@@ -99,22 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const pie = d3.pie().value(d => d.value);
         const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
-        const arcs = svg.selectAll('path')
+        svg.selectAll('path')
             .data(pie(pieData))
             .join('path')
             .attr('d', arc)
             .attr('fill', d => color(d.data.label))
             .attr('stroke', 'white')
-            .style('stroke-width', '2px')
-            .style('opacity', 0.7);
-
-        arcs.transition()
-            .duration(1000)
-            .attrTween('d', function(d) {
-                const i = d3.interpolate(this._current, d);
-                this._current = i(0);
-                return function(t) { return arc(i(t)); };
-            });
+            .style('stroke-width', '2px');
 
         svg.selectAll('text')
             .data(pie(pieData))
@@ -122,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .text(d => `${d.data.label} (${d.data.value})`)
             .attr('transform', d => `translate(${arc.centroid(d)})`)
             .style('text-anchor', 'middle')
-            .style('font-size', '12px')
-            .style('fill', 'white');
+            .style('font-size', '12px');
     }
 });
