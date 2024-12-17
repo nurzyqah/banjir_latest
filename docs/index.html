@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banjir Map Visualization</title>
+    <title>Malaysia Flood Dashboard</title>
     <link rel="stylesheet" href="banjir.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
-    <h1>Banjir Map Visualization</h1>
-    <div id="map"></div>
-    <div id="table-container"></div>
+    <div class="container">
+        <h1>Malaysia Flood Dashboard</h1>
+        <div id="map"></div>
+        <div id="table-container">
+            <p class="loading">Loading data...</p>
+        </div>
+    </div>
+
+    <!-- Pautan ke D3.js dan script.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
