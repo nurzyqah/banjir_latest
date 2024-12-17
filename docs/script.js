@@ -1,13 +1,10 @@
-// GeoJSON URLs for Malaysia maps
 const geoJsonUrls = [
-    'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson',
-    'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson'
+    'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson'),
+    'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson')
 ];
 
-// Flood API URL using CORS proxy
 const floodApiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/pusat-buka.php?a=0&b=0');
 
-// Map dimensions
 const width = 900;
 const height = 500;
 
@@ -17,27 +14,33 @@ const svg = d3.select("#map")
     .attr("width", width)
     .attr("height", height);
 
-// Define the projection for Malaysia
+// Projection for Malaysia map
 const projection = d3.geoMercator()
     .center([109.5, 3.5]) // Center of Malaysia
     .scale(3000)
     .translate([width / 2, height / 2]);
 
-// Define the path generator
 const path = d3.geoPath().projection(projection);
 
-// Main function to render the map and load data
+// Fetch GeoJSON through proxy
+async function fetchGeoJson(url) {
+    const response = await fetch(url);
+    const result = await response.json();
+    return JSON.parse(result.contents);
+}
+
+// Draw Map
 async function drawMap() {
     try {
         const combinedGeoJson = { type: "FeatureCollection", features: [] };
 
-        // Load GeoJSON files for Peninsular Malaysia and Borneo
+        // Load GeoJSON files
         for (let url of geoJsonUrls) {
-            const response = await d3.json(url);
-            combinedGeoJson.features = combinedGeoJson.features.concat(response.features);
+            const data = await fetchGeoJson(url);
+            combinedGeoJson.features = combinedGeoJson.features.concat(data.features);
         }
 
-        // Render the combined GeoJSON map
+        // Render map
         svg.selectAll("path")
             .data(combinedGeoJson.features)
             .enter()
@@ -47,44 +50,33 @@ async function drawMap() {
             .attr("fill", "#e0e0e0")
             .attr("stroke-width", 0.5);
 
-        console.log("GeoJSON data successfully loaded.");
-
         // Load flood center data
         loadFloodCenters();
     } catch (error) {
         console.error("Error loading GeoJSON:", error);
-        d3.select("#map").append("p").text("Failed to load the map. Please check your connection.");
+        d3.select("#map").append("p").text("Failed to load the map.");
     }
 }
 
-// Function to load flood center data
+// Load flood center data
 async function loadFloodCenters() {
     const tableContainer = document.getElementById('table-container');
 
     try {
         const response = await fetch(floodApiUrl);
-        const proxyData = await response.text();
-        const jsonData = JSON.parse(proxyData).contents; // Parse the proxy response
-        const floodData = JSON.parse(jsonData); // Extract flood data
+        const proxyData = await response.json();
+        const floodData = JSON.parse(proxyData.contents);
 
-        console.log("Flood data successfully loaded:", floodData);
-
-        // Render flood centers on the map and display table
         displayData(floodData);
         renderFloodCentersOnMap(floodData.ppsbuka);
     } catch (error) {
         console.error("Error loading flood data:", error);
-        tableContainer.innerHTML = `<p style="color: red;">Failed to load flood center data. Please try again later.</p>`;
+        tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
     }
 }
 
-// Function to render flood centers on the map
+// Render flood centers as circles on the map
 function renderFloodCentersOnMap(floodCenters) {
-    if (!floodCenters || floodCenters.length === 0) {
-        console.warn("No flood centers data to render.");
-        return;
-    }
-
     svg.selectAll("circle")
         .data(floodCenters)
         .enter()
@@ -99,18 +91,16 @@ function renderFloodCentersOnMap(floodCenters) {
         .text(d => `${d.nama} (${d.negeri} - ${d.daerah})`);
 }
 
-// Function to display flood center data in a table
+// Display table data
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
-
     if (!data.ppsbuka || data.ppsbuka.length === 0) {
-        tableContainer.innerHTML = '<p>No flood center data available.</p>';
+        tableContainer.innerHTML = '<p>No data available.</p>';
         return;
     }
 
-    // Build the table HTML
     let tableHTML = `
-        <table border="1" cellspacing="0" cellpadding="5">
+        <table>
             <thead>
                 <tr>
                     <th>PPS Name</th>
@@ -139,9 +129,7 @@ function displayData(data) {
 
     tableHTML += `</tbody></table>`;
     tableContainer.innerHTML = tableHTML;
-
-    console.log("Flood center data table rendered successfully.");
 }
 
-// Initialize the map rendering
+// Initialize map rendering
 drawMap();
