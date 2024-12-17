@@ -6,12 +6,19 @@ body {
 }
 
 .container {
-    max-width: 1400px; /* Match your friend's container width */
-    margin: 20px auto;
+    width: 100%;
+    max-width: 1200px; /* Lebar maksimum kontainer */
+    margin: 0 auto; /* Memastikan kontainer berada di tengah */
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Bahagian dalam setiap container */
+.section {
+    margin-bottom: 20px; /* Jarak antara bahagian */
+    padding: 15px;
+    background-color: #f9f9f9; /* Warna latar belakang untuk setiap bahagian */
+    border-radius: 8px; /* Sudut bulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan untuk memberi kesan */
 }
 
 h1 {
