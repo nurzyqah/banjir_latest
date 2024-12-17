@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (jsonData && jsonData.contents) {
                     const parsedData = JSON.parse(jsonData.contents);  // Parse the contents as JSON
                     displayData(parsedData);  // Pass the parsed data to displayData
+                    displayPieChart(parsedData);  // Add pie chart logic here
                 } else {
                     throw new Error('Invalid JSON structure: missing contents');
                 }
@@ -96,17 +97,53 @@ function loadMap() {
         .then(data => {
             L.geoJSON(data).addTo(map);
         });
+}
 
-    // Example: Adding a popup marker to the map for each flood data location (you can adjust based on your data)
-    // Here we assume your data has coordinates (latitude and longitude)
-    const floodData = [
-        { lat: 4.2105, lon: 101.9758, name: "Johor", victims: 200 },
-        { lat: 5.4143, lon: 100.3288, name: "Penang", victims: 150 }
-    ];
+// Function to display a pie chart based on the data
+function displayPieChart(data) {
+    const pieChartContainer = document.getElementById('pie-chart-container');
+    const ctx = document.getElementById('floodPieChart').getContext('2d');
 
-    floodData.forEach(location => {
-        L.marker([location.lat, location.lon])
-            .addTo(map)
-            .bindPopup(`<b>${location.name}</b><br>Victims: ${location.victims}`);
+    // Assuming 'data.ppsbuka' contains information about victims and families
+    let victims = 0;
+    let families = 0;
+
+    data.ppsbuka.forEach(item => {
+        victims += parseInt(item.mangsa) || 0;
+        families += parseInt(item.keluarga) || 0;
+    });
+
+    const pieData = {
+        labels: ['Victims', 'Families'],
+        datasets: [{
+            label: 'Flood Data',
+            data: [victims, families],
+            backgroundColor: ['#FF5733', '#33FF57'],  // Red for victims, Green for families
+            borderColor: ['#FF5733', '#33FF57'],
+            borderWidth: 1
+        }]
+    };
+
+    const pieOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString();
+                    }
+                }
+            }
+        }
+    };
+
+    // Create and render the pie chart
+    new Chart(ctx, {
+        type: 'pie',
+        data: pieData,
+        options: pieOptions
     });
 }
