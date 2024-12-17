@@ -4,10 +4,9 @@ const apiUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/a
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
-    const loadingMessage = document.getElementById('loading-message');
-    loadingMessage.textContent = 'Loading data...';  // Show loading message
 
-    fetch(corsProxyUrl + apiUrlSemenanjung)
+    // Replace apiUrl with either apiUrlSemenanjung or apiUrlBorneo
+    fetch(apiUrlSemenanjung)  // Example: Using apiUrlSemenanjung here
         .then(response => response.text())  // Get raw response as text
         .then(data => {
             console.log('Raw proxy data:', data);  // Log the raw data to check for issues
@@ -17,20 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const parsedData = JSON.parse(jsonData.contents);  // Parse the contents as JSON
                     displayData(parsedData);  // Pass the parsed data to displayData
                     displayPieChart(parsedData);  // Add pie chart logic here
-                    loadingMessage.style.display = 'none';  // Hide loading message after data is loaded
                 } else {
                     throw new Error('Invalid JSON structure: missing contents');
                 }
             } catch (error) {
                 console.error('Error parsing the data:', error.message);
                 tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
-                loadingMessage.textContent = '';  // Hide loading message on error
             }
         })
         .catch(error => {
             console.error('Error fetching data:', error.message);
             tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
-            loadingMessage.textContent = '';  // Hide loading message on error
         });
 
     // Load GeoJSON data and display map
@@ -96,7 +92,6 @@ function loadMap() {
     fetch(geojsonUrlSemenanjung)
         .then(response => response.json())
         .then(data => {
-            console.log('GeoJSON Data (Semenanjung):', data);
             L.geoJSON(data).addTo(map);
         })
         .catch(error => console.error('Error loading GeoJSON data for Semenanjung:', error));
@@ -104,7 +99,6 @@ function loadMap() {
     fetch(geojsonUrlBorneo)
         .then(response => response.json())
         .then(data => {
-            console.log('GeoJSON Data (Borneo):', data);
             L.geoJSON(data).addTo(map);
         })
         .catch(error => console.error('Error loading GeoJSON data for Borneo:', error));
@@ -149,6 +143,7 @@ function displayPieChart(data) {
                 callbacks: {
                     // Display the value in tooltip with a more user-friendly format
                     label: function(tooltipItem) {
+                        // Display the value as a number with a comma for thousands
                         return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString();
                     },
                     // Adding percentage tooltips
