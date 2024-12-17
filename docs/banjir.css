@@ -1,30 +1,23 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f1f1f1;
     margin: 0;
     padding: 0;
 }
 
 .container {
-    width: 100%;
-    max-width: 1200px; /* Lebar maksimum kontainer */
-    margin: 0 auto; /* Memastikan kontainer berada di tengah */
-    padding: 20px;
-}
-
-/* Bahagian dalam setiap container */
-.section {
-    margin-bottom: 20px; /* Jarak antara bahagian */
-    padding: 15px;
-    background-color: #f9f9f9; /* Warna latar belakang untuk setiap bahagian */
-    border-radius: 8px; /* Sudut bulat */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan untuk memberi kesan */
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
     color: #007bff;
-    font-size: 2rem;
+    font-size: 36px;
     margin-bottom: 20px;
 }
 
@@ -36,11 +29,13 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th, td {
-    padding: 10px;
+    padding: 12px;
     text-align: left;
     border: 1px solid #ddd;
 }
@@ -48,47 +43,53 @@ th, td {
 th {
     background-color: #007bff;
     color: white;
+    font-size: 16px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
 }
 
 .loading {
     text-align: center;
-    font-size: 16px;
+    font-size: 18px;
     color: #666;
 }
 
 #map {
-    margin-top: 20px;
-    height: 400px;
-}
-
-#pie-chart-container {
-    margin-top: 20px;
+    margin-top: 30px;
+    height: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 canvas {
-    max-width: 400px;
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 40px auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark Mode */
-body.dark-mode {
-    background-color: #0d1117;
-    color: #c9d1d9;
-}
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
 
-.dark-mode .container {
-    background-color: #161b22;
-}
+    h1 {
+        font-size: 28px;
+    }
 
-.dark-mode table {
-    background-color: #161b22;
-    color: #c9d1d9;
-}
+    #table-container {
+        margin-top: 10px;
+    }
 
-.dark-mode th {
-    background-color: #0366d6;
-}
-
-.dark-mode .loading {
-    color: #8b949e;
+    #map {
+        height: 300px;
+    }
 }

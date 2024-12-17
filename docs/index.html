@@ -4,35 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malaysia Flood Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="banjir.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Malaysia Flood Dashboard</h1>
-        </header>
-    </div>
-
-    <div class="container">
+        <h1>Malaysia Flood Dashboard</h1>
         <div id="table-container">
             <p class="loading">Loading data...</p>
         </div>
-    </div>
-
-    <div class="container">
-        <div id="map" style="height: 400px;"></div>
-    </div>
-
-    <div class="container">
-        <div id="pie-chart-container" style="margin-top: 20px;">
+        <div id="map"></div>
+        <div id="pie-chart-container">
             <canvas id="floodPieChart"></canvas>
         </div>
     </div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
