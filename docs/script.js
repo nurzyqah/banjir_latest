@@ -168,6 +168,4 @@ function displayPieChart(data) {
         // If no data is available, display a message
         pieChartContainer.innerHTML = '<p>No data available for the pie chart.</p>';
     }
-
-    
 }
