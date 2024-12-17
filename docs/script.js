@@ -77,26 +77,25 @@ function loadMap() {
         attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    // CORS proxy URL
-    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    // URLs for the GeoJSON data (using AllOrigins proxy)
+    const geojsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
+    const geojsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 
-    const geojsonUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
-    const geojsonUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
-
-    // Fetching the GeoJSON data with CORS proxy
-    fetch(proxyUrl + encodeURIComponent(geojsonUrlSemenanjung))
+    // Fetch Semenanjung GeoJSON data
+    fetch(geojsonUrlSemenanjung)
         .then(response => response.json())
-        .then(data => L.geoJSON(data).addTo(map))
-        .catch(error => {
-            console.error('Error fetching Semenanjung GeoJSON:', error.message);
-        });
+        .then(data => {
+            L.geoJSON(JSON.parse(data.contents)).addTo(map);
+        })
+        .catch(error => console.error('Error fetching Semenanjung geojson:', error));
 
-    fetch(proxyUrl + encodeURIComponent(geojsonUrlBorneo))
+    // Fetch Borneo GeoJSON data
+    fetch(geojsonUrlBorneo)
         .then(response => response.json())
-        .then(data => L.geoJSON(data).addTo(map))
-        .catch(error => {
-            console.error('Error fetching Borneo GeoJSON:', error.message);
-        });
+        .then(data => {
+            L.geoJSON(JSON.parse(data.contents)).addTo(map);
+        })
+        .catch(error => console.error('Error fetching Borneo geojson:', error));
 }
 
 function displayPieChart(data) {
