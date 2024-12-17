@@ -3,36 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malaysia Flood Dashboard</title>
-    <link rel="stylesheet" href="banjir.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Malaysia Flood Dashboard</h1>
-        </header>
-    </div>
 
-    <div class="container">
-        <div id="table-container">
-            <p class="loading">Loading data...</p>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Dashboard</h2>
+            <div class="sidebar-item">Home</div>
+            <div class="sidebar-item">Reports</div>
+            <div class="sidebar-item">Analytics</div>
+            <div class="sidebar-item">Settings</div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="main-content">
+            <!-- Header Section -->
+            <div class="container header">
+                <h1>Welcome to Your Dashboard</h1>
+                <p>Overview of your recent activity and stats</p>
+            </div>
+
+            <!-- Statistics Row -->
+            <div class="row">
+                <div class="container widget">
+                    <h2>Statistic 1</h2>
+                    <p>Details about the first statistic</p>
+                </div>
+                <div class="container widget">
+                    <h2>Statistic 2</h2>
+                    <p>Details about the second statistic</p>
+                </div>
+                <div class="container widget">
+                    <h2>Statistic 3</h2>
+                    <p>Details about the third statistic</p>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="container widget">
+                <h2>Recent Activity</h2>
+                <p>Details about recent user activity</p>
+            </div>
+
+            <!-- Performance & Alerts Section -->
+            <div class="row">
+                <div class="container widget">
+                    <h2>Performance</h2>
+                    <p>Details about performance metrics</p>
+                </div>
+                <div class="container widget">
+                    <h2>Alerts</h2>
+                    <p>Recent alerts and notifications</p>
+                </div>
+            </div>
+
+            <!-- Footer Section -->
+            <div class="container footer">
+                <p>Footer Content</p>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        <div id="map" style="height: 400px;"></div>
-    </div>
-
-    <div class="container">
-        <div id="pie-chart-container" style="margin-top: 20px;">
-            <canvas id="floodPieChart"></canvas>
-        </div>
-    </div>
-
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>
