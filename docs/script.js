@@ -85,7 +85,11 @@ function loadMap() {
     fetch(geojsonUrlSemenanjung)
         .then(response => response.json())
         .then(data => {
-            L.geoJSON(JSON.parse(data.contents)).addTo(map);
+            if (data.contents) {
+                L.geoJSON(JSON.parse(data.contents)).addTo(map);
+            } else {
+                console.error('Invalid response for Semenanjung geojson:', data);
+            }
         })
         .catch(error => console.error('Error fetching Semenanjung geojson:', error));
 
@@ -93,7 +97,11 @@ function loadMap() {
     fetch(geojsonUrlBorneo)
         .then(response => response.json())
         .then(data => {
-            L.geoJSON(JSON.parse(data.contents)).addTo(map);
+            if (data.contents) {
+                L.geoJSON(JSON.parse(data.contents)).addTo(map);
+            } else {
+                console.error('Invalid response for Borneo geojson:', data);
+            }
         })
         .catch(error => console.error('Error fetching Borneo geojson:', error));
 }
