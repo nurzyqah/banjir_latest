@@ -2,7 +2,7 @@
 const corsProxyUrl = 'https://api.allorigins.win/raw?url='; // Replace with ThingProxy or CORS Proxy if needed
 
 // API URLs
-const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/flood_data.json';
+const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 const apiUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
 const apiUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
