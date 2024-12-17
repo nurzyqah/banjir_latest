@@ -14,16 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     displayData(parsedData);
                     displayPieChart(parsedData);
                 } else {
-                    throw new Error('Invalid JSON structure: missing contents');
+                    throw new Error('Struktur JSON tidak sah: kandungan hilang');
                 }
             } catch (error) {
-                console.error('Error parsing the data:', error.message);
-                tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
+                console.error('Ralat dalam memproses data:', error.message);
+                tableContainer.innerHTML = `<p style="color: red;">Gagal untuk memproses data: ${error.message}</p>`;
             }
         })
         .catch(error => {
-            console.error('Error fetching data:', error.message);
-            tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
+            console.error('Ralat memuatkan data:', error.message);
+            tableContainer.innerHTML = `<p style="color: red;">Gagal untuk memuatkan data: ${error.message}</p>`;
         });
 
     loadMap();
@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
-    console.log('Displaying data:', data);
+    console.log('Memaparkan data:', data);
 
     if (!data.ppsbuka || data.ppsbuka.length === 0) {
-        tableContainer.innerHTML = '<p>No data available.</p>';
+        tableContainer.innerHTML = '<p>Tiada data yang tersedia.</p>';
         return;
     }
 
@@ -42,12 +42,12 @@ function displayData(data) {
         <table>
             <thead>
                 <tr>
-                    <th>PPS Name</th>
-                    <th>State</th>
-                    <th>District</th>
-                    <th>Victims</th>
-                    <th>Families</th>
-                    <th>Capacity</th>
+                    <th>Nama PPS</th>
+                    <th>Negeri</th>
+                    <th>Daerah</th>
+                    <th>Mangsa</th>
+                    <th>Keluarga</th>
+                    <th>Kapasiti</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,27 +81,25 @@ function loadMap() {
     const geojsonUrlSemenanjung = 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
     const geojsonUrlBorneo = 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 
-
     // Fetch Semenanjung GeoJSON data
     fetch(geojsonUrlSemenanjung)
     .then(response => {
         if (response.ok) {
             return response.json();
         } else {
-            throw new Error('Failed to load geojson data');
+            throw new Error('Gagal memuatkan data geojson');
         }
     })
     .then(data => {
         if (data.contents) {
             L.geoJSON(JSON.parse(data.contents)).addTo(map);
         } else {
-            console.error('Invalid response for Semenanjung geojson:', data);
+            console.error('Respons yang tidak sah untuk Semenanjung geojson:', data);
         }
     })
     .catch(error => {
-        console.error('Error fetching Semenanjung geojson:', error);
+        console.error('Ralat memuatkan geojson Semenanjung:', error);
     });
-
 
     // Fetch Borneo GeoJSON data
     fetch(geojsonUrlBorneo)
@@ -110,10 +108,10 @@ function loadMap() {
             if (data.contents) {
                 L.geoJSON(JSON.parse(data.contents)).addTo(map);
             } else {
-                console.error('Invalid response for Borneo geojson:', data);
+                console.error('Respons yang tidak sah untuk Borneo geojson:', data);
             }
         })
-        .catch(error => console.error('Error fetching Borneo geojson:', error));
+        .catch(error => console.error('Ralat memuatkan geojson Borneo:', error));
 }
 
 function displayPieChart(data) {
@@ -128,7 +126,7 @@ function displayPieChart(data) {
     });
 
     const pieData = {
-        labels: ['Victims', 'Families'],
+        labels: ['Mangsa', 'Keluarga'],
         datasets: [{
             data: [victims, families],
             backgroundColor: ['#FF5733', '#33FF57'],
@@ -156,6 +154,6 @@ function displayPieChart(data) {
             }
         });
     } else {
-        document.getElementById('pie-chart-container').innerHTML = '<p>No data available for pie chart.</p>';
+        document.getElementById('pie-chart-container').innerHTML = '<p>Tiada data tersedia untuk carta pai.</p>';
     }
 }
