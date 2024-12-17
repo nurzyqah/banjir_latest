@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1400px; /* Match your friend's container width */
     margin: 20px auto;
     padding: 20px;
     background-color: #ffffff;
@@ -17,6 +17,8 @@ body {
 h1 {
     text-align: center;
     color: #007bff;
+    font-size: 2rem;
+    margin-bottom: 20px;
 }
 
 #table-container {
@@ -49,10 +51,37 @@ th {
 
 #map {
     margin-top: 20px;
-    height: 400px; /* Adjust map container height */
+    height: 400px;
+}
+
+#pie-chart-container {
+    margin-top: 20px;
 }
 
 canvas {
     max-width: 400px;
     margin: 0 auto;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
+
+.dark-mode .container {
+    background-color: #161b22;
+}
+
+.dark-mode table {
+    background-color: #161b22;
+    color: #c9d1d9;
+}
+
+.dark-mode th {
+    background-color: #0366d6;
+}
+
+.dark-mode .loading {
+    color: #8b949e;
 }
