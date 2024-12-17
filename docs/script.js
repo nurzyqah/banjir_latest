@@ -96,4 +96,17 @@ function loadMap() {
         .then(data => {
             L.geoJSON(data).addTo(map);
         });
+
+    // Example: Adding a popup marker to the map for each flood data location (you can adjust based on your data)
+    // Here we assume your data has coordinates (latitude and longitude)
+    const floodData = [
+        { lat: 4.2105, lon: 101.9758, name: "Johor", victims: 200 },
+        { lat: 5.4143, lon: 100.3288, name: "Penang", victims: 150 }
+    ];
+
+    floodData.forEach(location => {
+        L.marker([location.lat, location.lon])
+            .addTo(map)
+            .bindPopup(`<b>${location.name}</b><br>Victims: ${location.victims}`);
+    });
 }
