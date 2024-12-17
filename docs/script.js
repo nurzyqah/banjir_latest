@@ -1,50 +1,38 @@
-// Alternative Proxy URL
-const corsProxyUrl = 'https://api.allorigins.win/raw?url='; // Replace with ThingProxy or CORS Proxy if needed
+const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 
-// API URLs
-const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/flood_data.json';
-const apiUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
-const apiUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
-
-// Run after DOM content is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
-    const pieChartContainer = document.getElementById('pie-chart-container');
-    const mapContainer = document.getElementById('map');
 
-    if (!tableContainer || !pieChartContainer || !mapContainer) {
-        console.error("Missing DOM elements. Ensure 'table-container', 'pie-chart-container', and 'map' exist in the HTML.");
-        return;
-    }
-
-    tableContainer.textContent = 'Loading data...';
-
-    fetchData();
-    loadMap();
-});
-
-// Fetch flood data
-function fetchData() {
-    const tableContainer = document.getElementById('table-container');
-
-    fetch(corsProxyUrl + encodeURIComponent(apiUrl))
-        .then(response => {
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-            return response.json();
-        })
+    fetch(apiUrl)
+        .then(response => response.text())  // Get raw response as text
         .then(data => {
-            displayData(data);
-            displayPieChart(data);
+            console.log('Raw proxy data:', data);  // Log the raw data to check for issues
+            try {
+                const jsonData = JSON.parse(data);  // Attempt to parse the response as JSON
+                if (jsonData && jsonData.contents) {
+                    const parsedData = JSON.parse(jsonData.contents);  // Parse the contents as JSON
+                    displayData(parsedData);  // Pass the parsed data to displayData
+                    displayPieChart(parsedData);  // Add pie chart logic here
+                } else {
+                    throw new Error('Invalid JSON structure: missing contents');
+                }
+            } catch (error) {
+                console.error('Error parsing the data:', error.message);
+                tableContainer.innerHTML = `<p style="color: red;">Failed to parse data: ${error.message}</p>`;
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error.message);
             tableContainer.innerHTML = `<p style="color: red;">Failed to load data: ${error.message}</p>`;
         });
-}
 
-// Display table data
+    // Load GeoJSON data and display map
+    loadMap();
+});
+
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
+    console.log('Displaying data:', data);
 
     if (!data.ppsbuka || data.ppsbuka.length === 0) {
         tableContainer.innerHTML = '<p>No data available.</p>';
@@ -83,60 +71,98 @@ function displayData(data) {
     tableContainer.innerHTML = tableHTML;
 }
 
-// Load map with geoJSON data
+// Function to load the map and GeoJSON data
 function loadMap() {
-    const map = L.map('map').setView([4.2105, 101.9758], 6);
+    // Initialize map centered at Malaysia's latitude and longitude
+    const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia's coordinates
 
+    // Add OpenStreetMap tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    fetch(corsProxyUrl + encodeURIComponent(apiUrlSemenanjung))
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, { style: { color: 'blue' } }).addTo(map);
-        })
-        .catch(error => console.error('Error loading Semenanjung data:', error));
+    // Load GeoJSON data for Malaysia districts
+    const geojsonUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
+    const geojsonUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
-    fetch(corsProxyUrl + encodeURIComponent(apiUrlBorneo))
+    // Fetch and add GeoJSON layers for districts
+    fetch(geojsonUrlSemenanjung)
         .then(response => response.json())
         .then(data => {
-            L.geoJSON(data, { style: { color: 'green' } }).addTo(map);
-        })
-        .catch(error => console.error('Error loading Borneo data:', error));
+            L.geoJSON(data).addTo(map);
+        });
+
+    fetch(geojsonUrlBorneo)
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data).addTo(map);
+        });
 }
 
-// Display pie chart
+// Function to display a pie chart based on the data
+// Function to display a pie chart based on the data
 function displayPieChart(data) {
     const pieChartContainer = document.getElementById('pie-chart-container');
     const ctx = document.getElementById('floodPieChart').getContext('2d');
 
+    // Initialize counters for victims and families
     let victims = 0;
     let families = 0;
 
+    // Loop through the data to accumulate total victims and families
     data.ppsbuka.forEach(item => {
+        // Ensure that the numbers are valid integers, defaulting to 0 if not
         victims += parseInt(item.mangsa) || 0;
         families += parseInt(item.keluarga) || 0;
     });
 
+    // Prepare the data for the pie chart
     const pieData = {
         labels: ['Victims', 'Families'],
         datasets: [{
-            label: 'Flood Data',
+            label: 'Flood Data (Victims vs Families)',
             data: [victims, families],
-            backgroundColor: ['#FF5733', '#33FF57'],
+            backgroundColor: ['#FF5733', '#33FF57'],  // Red for victims, Green for families
             borderColor: ['#FF5733', '#33FF57'],
             borderWidth: 1
         }]
     };
 
+    // Options for the pie chart
+    const pieOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    // Display the value in tooltip with a more user-friendly format
+                    label: function(tooltipItem) {
+                        // Display the value as a number with a comma for thousands
+                        return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString();
+                    },
+                    // Adding percentage tooltips
+                    afterLabel: function(tooltipItem) {
+                        const total = victims + families;
+                        const percentage = (tooltipItem.raw / total * 100).toFixed(2);
+                        return `(${percentage}% of total)`;
+                    }
+                }
+            }
+        }
+    };
+
+    // Check if victims or families are zero to avoid drawing an empty pie chart
     if (victims > 0 || families > 0) {
+        // Create and render the pie chart
         new Chart(ctx, {
             type: 'pie',
             data: pieData,
-            options: { responsive: true }
+            options: pieOptions
         });
     } else {
-        pieChartContainer.innerHTML = '<p>No data for pie chart.</p>';
+        // If no data is available, display a message
+        pieChartContainer.innerHTML = '<p>No data available for the pie chart.</p>';
     }
 }
