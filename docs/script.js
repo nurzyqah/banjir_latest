@@ -1,5 +1,8 @@
-const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS Anywhere proxy URL
-const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/flood_data.json'; // Example API
+// Alternative Proxy URL
+const corsProxyUrl = 'https://api.allorigins.win/raw?url='; // Replace with ThingProxy or CORS Proxy if needed
+
+// API URLs
+const apiUrl = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/flood_data.json';
 const apiUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
 const apiUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
@@ -9,25 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const pieChartContainer = document.getElementById('pie-chart-container');
     const mapContainer = document.getElementById('map');
 
-    // Check if essential elements exist
     if (!tableContainer || !pieChartContainer || !mapContainer) {
         console.error("Missing DOM elements. Ensure 'table-container', 'pie-chart-container', and 'map' exist in the HTML.");
         return;
     }
 
-    // Inform user that data is loading
     tableContainer.textContent = 'Loading data...';
 
-    // Fetch data and display table, pie chart, and map
     fetchData();
     loadMap();
 });
 
+// Fetch flood data
 function fetchData() {
     const tableContainer = document.getElementById('table-container');
 
-    fetch(corsProxyUrl + apiUrl)
-        .then(response => response.json())
+    fetch(corsProxyUrl + encodeURIComponent(apiUrl))
+        .then(response => {
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            return response.json();
+        })
         .then(data => {
             displayData(data);
             displayPieChart(data);
@@ -38,6 +42,7 @@ function fetchData() {
         });
 }
 
+// Display table data
 function displayData(data) {
     const tableContainer = document.getElementById('table-container');
 
@@ -78,24 +83,22 @@ function displayData(data) {
     tableContainer.innerHTML = tableHTML;
 }
 
+// Load map with geoJSON data
 function loadMap() {
-    const map = L.map('map').setView([4.2105, 101.9758], 6); // Malaysia's coordinates
+    const map = L.map('map').setView([4.2105, 101.9758], 6);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    const geojsonUrlSemenanjung = corsProxyUrl + apiUrlSemenanjung;
-    const geojsonUrlBorneo = corsProxyUrl + apiUrlBorneo;
-
-    fetch(geojsonUrlSemenanjung)
+    fetch(corsProxyUrl + encodeURIComponent(apiUrlSemenanjung))
         .then(response => response.json())
         .then(data => {
             L.geoJSON(data, { style: { color: 'blue' } }).addTo(map);
         })
         .catch(error => console.error('Error loading Semenanjung data:', error));
 
-    fetch(geojsonUrlBorneo)
+    fetch(corsProxyUrl + encodeURIComponent(apiUrlBorneo))
         .then(response => response.json())
         .then(data => {
             L.geoJSON(data, { style: { color: 'green' } }).addTo(map);
@@ -103,6 +106,7 @@ function loadMap() {
         .catch(error => console.error('Error loading Borneo data:', error));
 }
 
+// Display pie chart
 function displayPieChart(data) {
     const pieChartContainer = document.getElementById('pie-chart-container');
     const ctx = document.getElementById('floodPieChart').getContext('2d');
