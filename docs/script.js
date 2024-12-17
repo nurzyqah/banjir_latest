@@ -1,4 +1,6 @@
-const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+const corsProxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS Anywhere proxy URL
+const apiUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
+const apiUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
@@ -81,24 +83,22 @@ function loadMap() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    // Use AllOrigins proxy for GeoJSON files to avoid CORS issues
-    const geojsonUrlSemenanjung = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
-    const geojsonUrlBorneo = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
+    // Use CORS Anywhere proxy for GeoJSON files to avoid CORS issues
+    const geojsonUrlSemenanjung = corsProxyUrl + apiUrlSemenanjung;
+    const geojsonUrlBorneo = corsProxyUrl + apiUrlBorneo;
 
     // Fetch and add GeoJSON layers for districts
     fetch(geojsonUrlSemenanjung)
         .then(response => response.json())
         .then(data => {
-            const jsonData = JSON.parse(data.contents);
-            L.geoJSON(jsonData).addTo(map);
+            L.geoJSON(data).addTo(map);
         })
         .catch(error => console.error('Error loading GeoJSON data for Semenanjung:', error));
 
     fetch(geojsonUrlBorneo)
         .then(response => response.json())
         .then(data => {
-            const jsonData = JSON.parse(data.contents);
-            L.geoJSON(jsonData).addTo(map);
+            L.geoJSON(data).addTo(map);
         })
         .catch(error => console.error('Error loading GeoJSON data for Borneo:', error));
 }
