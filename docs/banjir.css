@@ -25,7 +25,7 @@ h2 {
     margin-bottom: 10px;
 }
 
-#table-container, #map-container, #pie-chart-container {
+.section-container {
     margin-top: 20px;
 }
 
