@@ -168,4 +168,71 @@ function displayPieChart(data) {
         // If no data is available, display a message
         pieChartContainer.innerHTML = '<p>No data available for the pie chart.</p>';
     }
+
+    // Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Set the default Mangsa Masuk value
+    let mangsaMasuk = 0;  // You can update this dynamically based on real data
+
+    // Select the Mangsa Masuk element in the DOM to display the data
+    const mangsaMasukElement = document.querySelector('.echart-mangsa-masuk .text-800');
+    if (mangsaMasukElement) {
+        mangsaMasukElement.textContent = mangsaMasuk;
+    }
+
+    // Function to fetch and update the Mangsa Masuk count (for example, from an API or dataset)
+    function updateMangsaMasukCount() {
+        // Simulating an API call (replace this with your actual API call or logic)
+        setTimeout(() => {
+            // Random number for demonstration purposes (replace with real data)
+            mangsaMasuk = Math.floor(Math.random() * 100);
+            
+            // Update the displayed count on the page
+            if (mangsaMasukElement) {
+                mangsaMasukElement.textContent = mangsaMasuk;
+            }
+        }, 1000); // Simulating delay of 1 second
+    }
+
+    // Initialize the ECharts instance
+    const myChart = echarts.init(document.querySelector('.echart-mangsa-masuk canvas'));
+
+    // Set chart options (replace with your actual data and options)
+    const chartOptions = {
+        title: {
+            text: 'Mangsa Masuk Statistics',
+            left: 'center',
+            top: '20px'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['January', 'February', 'March', 'April', 'May', 'June']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                data: [12, 25, 18, 38, 45, 22],  // Replace with actual dynamic data
+                type: 'line',
+                smooth: true
+            }
+        ]
+    };
+
+    // Set the options for the chart
+    myChart.setOption(chartOptions);
+
+    // Update the Mangsa Masuk count and chart every 10 seconds (simulating dynamic data update)
+    setInterval(updateMangsaMasukCount, 10000);
+
+    // Resize chart when the window is resized (responsive design)
+    window.addEventListener('resize', function () {
+        myChart.resize();
+    });
+});
+
 }
