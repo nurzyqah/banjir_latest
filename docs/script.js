@@ -77,16 +77,26 @@ function loadMap() {
         attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
+    // CORS proxy URL
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+
     const geojsonUrlSemenanjung = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson';
     const geojsonUrlBorneo = 'https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson';
 
-    fetch(geojsonUrlSemenanjung)
+    // Fetching the GeoJSON data with CORS proxy
+    fetch(proxyUrl + encodeURIComponent(geojsonUrlSemenanjung))
         .then(response => response.json())
-        .then(data => L.geoJSON(data).addTo(map));
+        .then(data => L.geoJSON(data).addTo(map))
+        .catch(error => {
+            console.error('Error fetching Semenanjung GeoJSON:', error.message);
+        });
 
-    fetch(geojsonUrlBorneo)
+    fetch(proxyUrl + encodeURIComponent(geojsonUrlBorneo))
         .then(response => response.json())
-        .then(data => L.geoJSON(data).addTo(map));
+        .then(data => L.geoJSON(data).addTo(map))
+        .catch(error => {
+            console.error('Error fetching Borneo GeoJSON:', error.message);
+        });
 }
 
 function displayPieChart(data) {
