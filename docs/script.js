@@ -115,16 +115,13 @@ function displayPieChart(data) {
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'top' },
+                    legend: {
+                        position: 'top',
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString();
-                            },
-                            afterLabel: function(tooltipItem) {
-                                const total = victims + families;
-                                const percentage = (tooltipItem.raw / total * 100).toFixed(2);
-                                return `(${percentage}% of total)`;
+                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
                             }
                         }
                     }
@@ -132,6 +129,6 @@ function displayPieChart(data) {
             }
         });
     } else {
-        document.getElementById('pie-chart-container').innerHTML = '<p>No data for the pie chart.</p>';
+        document.getElementById('pie-chart-container').innerHTML = '<p>No data available for pie chart.</p>';
     }
 }
