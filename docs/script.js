@@ -1,5 +1,9 @@
 const apiUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-table-pps.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
 
+const apiUrlAliranMangsa = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-aliran-trend.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+const apiUrlAliranMasuk = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-aliran-trend-masuk.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+const apiUrlAliranKeluar = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/api/data-dashboard-aliran-trend-balik.php?a=0&b=0&seasonmain_id=208&seasonnegeri_id=');
+
 document.addEventListener('DOMContentLoaded', () => {
     const tableContainer = document.getElementById('table-container');
 
@@ -27,6 +31,60 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     loadMap();
+
+    // Fetch and display the Aliran Jumlah Mangsa chart
+    fetch(apiUrlAliranMangsa)
+        .then(response => response.text())
+        .then(data => {
+            try {
+                const jsonData = JSON.parse(data);
+                if (jsonData && jsonData.contents) {
+                    const parsedData = JSON.parse(jsonData.contents);
+                    displayFlowChart(parsedData, 'flowChart'); // Aliran Jumlah Mangsa
+                } else {
+                    throw new Error('Data tidak sah: kandungan hilang');
+                }
+            } catch (error) {
+                console.error('Ralat dalam memproses data Aliran Jumlah Mangsa:', error.message);
+            }
+        })
+        .catch(error => console.error('Ralat memuatkan data Aliran Jumlah Mangsa:', error.message));
+
+    // Fetch and display the Aliran Mangsa Masuk chart
+    fetch(apiUrlAliranMasuk)
+        .then(response => response.text())
+        .then(data => {
+            try {
+                const jsonData = JSON.parse(data);
+                if (jsonData && jsonData.contents) {
+                    const parsedData = JSON.parse(jsonData.contents);
+                    displayFlowChart(parsedData, 'flowChartIn'); // Aliran Mangsa Masuk
+                } else {
+                    throw new Error('Data tidak sah: kandungan hilang');
+                }
+            } catch (error) {
+                console.error('Ralat dalam memproses data Aliran Mangsa Masuk:', error.message);
+            }
+        })
+        .catch(error => console.error('Ralat memuatkan data Aliran Mangsa Masuk:', error.message));
+
+    // Fetch and display the Aliran Mangsa Keluar chart
+    fetch(apiUrlAliranKeluar)
+        .then(response => response.text())
+        .then(data => {
+            try {
+                const jsonData = JSON.parse(data);
+                if (jsonData && jsonData.contents) {
+                    const parsedData = JSON.parse(jsonData.contents);
+                    displayFlowChart(parsedData, 'flowChartOut'); // Aliran Mangsa Keluar
+                } else {
+                    throw new Error('Data tidak sah: kandungan hilang');
+                }
+            } catch (error) {
+                console.error('Ralat dalam memproses data Aliran Mangsa Keluar:', error.message);
+            }
+        })
+        .catch(error => console.error('Ralat memuatkan data Aliran Mangsa Keluar:', error.message));
 });
 
 function displayData(data) {
@@ -143,6 +201,55 @@ function displayPieChart(data) {
             }
         }
     });
+}
+
+// Function to display flow chart for Total Mangsa, Mangsa Masuk, and Mangsa Keluar
+function displayFlowChart(data, chartId) {
+    const ctx = document.getElementById(chartId).getContext('2d');
+    let labels = [];
+    let values = [];
+
+    // Assuming the data has a structure like { dates: [], values: [] }
+    if (data && data.aliran && Array.isArray(data.aliran)) {
+        data.aliran.forEach(item => {
+            labels.push(item.date); // Add the date
+            values.push(item.value); // Add the value (number of victims)
+        });
+
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Mangsa',
+                data: values,
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                fill: true
+            }]
+        };
+
+        // Create the chart
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' mangsa';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        console.warn('Data tidak sesuai untuk carta aliran');
+    }
 }
 
 function filterTable() {
