@@ -144,24 +144,3 @@ function displayPieChart(data) {
         }
     });
 }
-
-function filterTable() {
-    const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
-    const tableRows = document.querySelectorAll('#table-container table tbody tr');
-
-    if (!searchInput) {
-        alert("Sila masukkan negeri atau daerah untuk carian.");
-        return;
-    }
-
-    tableRows.forEach(row => {
-        const negeri = row.cells[1].innerText.toLowerCase();
-        const daerah = row.cells[2].innerText.toLowerCase();
-
-        if (negeri.includes(searchInput) || daerah.includes(searchInput)) {
-            row.style.display = ""; // Show matching rows
-        } else {
-            row.style.display = "none"; // Hide non-matching rows
-        }
-    });
-}
