@@ -1,68 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carian Lokasi</title>
+    <title>Papan Pemuka Banjir Malaysia</title>
     <link rel="stylesheet" href="banjir.css">
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Carian Lokasi -->
-    <div class="search-container">
-        <h2>Carian Lokasi</h2>
-        <input type="text" id="searchInput" placeholder="Carian berdasarkan Nama PPS, Negeri, Daerah, Mangsa, Keluarga, Kapasiti">
-        <button onclick="searchTable()">Cari</button>
+    <div class="container">
+        <h1>Papan Pemuka Banjir Malaysia</h1>
+
+        <!-- Carian Lokasi -->
+        <div class="search-container">
+            <h2>Carian Lokasi</h2>
+            <input type="text" id="searchInput" placeholder="Cari negeri atau daerah...">
+            <button onclick="filterTable()">Cari</button>
+        </div>
+
+        <!-- Gambaran Keseluruhan Container -->
+        <div class="section-container" id="table-container">
+            <h2>Gambaran Keseluruhan</h2>
+            <p class="loading">Memuatkan data...</p>
+        </div>
+
+        <!-- Peta Banjir Container -->
+        <div class="section-container" id="map-container">
+            <h2>Peta Banjir</h2>
+            <div id="map" style="height: 400px;"></div>
+        </div>
+
+        <!-- Carta Pai Container -->
+        <div class="section-container" id="pie-chart-container" style="margin-top: 20px;">
+            <h2>Carta Pai Jumlah Mangsa dan Keluarga</h2>
+            <canvas id="floodPieChart"></canvas>
+        </div>
     </div>
 
-    <!-- Jadual Data -->
-    <div class="table-container">
-        <h3>Gambaran Keseluruhan</h3>
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>Nama PPS</th>
-                    <th>Negeri</th>
-                    <th>Daerah</th>
-                    <th>Mangsa</th>
-                    <th>Keluarga</th>
-                    <th>Kapasiti</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>BALAIRAYA GEMEREH IV (BATU BADAK)</td>
-                    <td>Johor</td>
-                    <td>SEGAMAT</td>
-                    <td>36</td>
-                    <td>11</td>
-                    <td>51.43%</td>
-                </tr>
-                <!-- Tambahkan baris tambahan di sini jika diperlukan -->
-            </tbody>
-        </table>
-    </div>
-
-    <script>
-        // Fungsi Carian Lokasi
-        function searchTable() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
-            const table = document.getElementById('dataTable');
-            const rows = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].getElementsByTagName('td');
-                let found = false;
-
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j].innerText.toLowerCase().includes(input)) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                rows[i].style.display = found ? '' : 'none';
-            }
-        }
-    </script>
+    <!-- Pautan ke D3.js dan script.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
