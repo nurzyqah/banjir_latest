@@ -77,31 +77,20 @@ function loadMap() {
         attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    // URLs for the GeoJSON data (using AllOrigins proxy)
     const geojsonUrlSemenanjung = 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_semenanjung.geojson');
     const geojsonUrlBorneo = 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent('https://infobencanajkmv2.jkm.gov.my/assets/data/malaysia/arcgis_district_borneo.geojson');
 
-    // Fetch Semenanjung GeoJSON data
     fetch(geojsonUrlSemenanjung)
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Gagal memuatkan data geojson');
-        }
-    })
-    .then(data => {
-        if (data.contents) {
-            L.geoJSON(JSON.parse(data.contents)).addTo(map);
-        } else {
-            console.error('Respons yang tidak sah untuk Semenanjung geojson:', data);
-        }
-    })
-    .catch(error => {
-        console.error('Ralat memuatkan geojson Semenanjung:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.contents) {
+                L.geoJSON(JSON.parse(data.contents)).addTo(map);
+            } else {
+                console.error('Respons yang tidak sah untuk Semenanjung geojson:', data);
+            }
+        })
+        .catch(error => console.error('Ralat memuatkan geojson Semenanjung:', error));
 
-    // Fetch Borneo GeoJSON data
     fetch(geojsonUrlBorneo)
         .then(response => response.json())
         .then(data => {
@@ -117,43 +106,41 @@ function loadMap() {
 function displayPieChart(data) {
     const ctx = document.getElementById('floodPieChart').getContext('2d');
 
-    let victims = 0;
-    let families = 0;
+    let totalVictims = 0;
+    let totalFamilies = 0;
 
-    data.ppsbuka.forEach(item => {
-        victims += parseInt(item.mangsa) || 0;
-        families += parseInt(item.keluarga) || 0;
-    });
+    // Calculate totals
+    if (data.ppsbuka && data.ppsbuka.length > 0) {
+        data.ppsbuka.forEach(item => {
+            totalVictims += parseInt(item.mangsa) || 0;
+            totalFamilies += parseInt(item.keluarga) || 0;
+        });
+    } else {
+        console.warn('Tiada data untuk carta pai');
+        return;
+    }
 
+    // Chart data
     const pieData = {
-        labels: ['Mangsa', 'Keluarga'],
+        labels: ['Jumlah Mangsa', 'Jumlah Keluarga'],
         datasets: [{
-            data: [victims, families],
-            backgroundColor: ['#FF5733', '#33FF57'],
+            label: 'Bilangan',
+            data: [totalVictims, totalFamilies],
+            backgroundColor: ['#007bff', '#28a745'],
+            hoverOffset: 4
         }]
     };
 
-    if (victims > 0 || families > 0) {
-        new Chart(ctx, {
-            type: 'pie',
-            data: pieData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
-                            }
-                        }
-                    }
+    // Create chart
+    new Chart(ctx, {
+        type: 'pie',
+        data: pieData,
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
-        });
-    } else {
-        document.getElementById('pie-chart-container').innerHTML = '<p>Tiada data tersedia untuk carta pai.</p>';
-    }
+        }
+    });
 }
